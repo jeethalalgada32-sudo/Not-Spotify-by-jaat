@@ -1,129 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StreamFlow Gold</title>
-<link rel="stylesheet" href="style.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlow Music 🎵</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <style>
+        :root {
+            --bg-color: #000;
+            --text-color: #fff;
+            --accent-color: #ffd700; /* Gold */
+            --vibe-color: 255, 215, 0; /* Default Gold RGB */
+        }
 
-<body class="gold">
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
 
-<header class="topbar">
-  <button id="menuBtn">☰</button>
-  <h1 style="font-size: 20px;">StreamFlow ⚡</h1>
-</header>
+        /* --- HEADER & SEARCH BAR --- */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
 
-<nav id="sidebar" class="sidebar">
-  <a data-page="home">🏠 Home</a>
-  <a data-page="search">🔍 Search</a>
-  <a data-page="library">🎵 Library</a>
-  <div class="themes">
-    <button onclick="setTheme('gold')">Gold</button>
-    <button onclick="setTheme('light')">Light</button>
-  </div>
-</nav>
+        .logo { font-size: 20px; font-weight: bold; color: var(--accent-color); display: flex; align-items: center; gap: 5px; }
+        
+        .search-box {
+            flex: 1;
+            margin: 0 15px;
+            display: flex;
+            background: #222;
+            border-radius: 25px;
+            padding: 5px 15px;
+        }
 
-<main>
-  <section id="home" class="page active">
-    <h2>Welcome Back 🎧</h2>
-    <p style="color:#888; margin-top:5px">Ready to listen?</p>
-  </section>
+        .search-box input {
+            background: transparent; border: none; color: #fff;
+            width: 100%; padding: 8px; outline: none; font-size: 16px;
+        }
 
-  <section id="search" class="page">
-    <h2>Search Songs</h2>
-    
-    <form onsubmit="event.preventDefault(); searchYT();" style="display: flex; gap: 10px; margin-top: 10px;">
-        <input type="search" id="searchInput" placeholder="Search song...">
-        <button type="submit" style="background: #d4af37; border:none; padding: 0 20px; border-radius: 25px; font-weight:bold; cursor:pointer;">GO</button>
-    </form>
+        .search-btn {
+            background: var(--accent-color); border: none;
+            padding: 8px 15px; border-radius: 50%;
+            cursor: pointer; font-weight: bold;
+        }
 
-    <div id="player"></div>
+        /* --- RESULTS GRID --- */
+        #results {
+            margin-top: 80px; /* Header ke neeche */
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding-bottom: 100px;
+        }
 
-    <div class="cards" id="results"></div>
-  </section>
+        .card {
+            background: #111; border-radius: 10px; overflow: hidden;
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .card-info { padding: 10px; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  <section id="library" class="page">
-    <h2>Your Library ❤️</h2>
-    <p>Saved songs will appear here.</p>
-    <div class="cards" id="librarySongs"></div>
-  </section>
-</main>
+        /* --- FULL SCREEN PLAYER OVERLAY --- */
+        #videoOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 5000;
+            display: none; /* Hidden by default */
+            flex-direction: column; justify-content: center;
+        }
+        #videoOverlay.active { display: flex; }
 
-<script src="script.js"></script>
-</body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+        /* Player Wrapper for Full Height */
+        .player-wrapper {
+            position: relative; width: 100%; height: 100%;
+        }
+        
+        iframe {
+            width: 100%; height: 100%; border: none;
+        }
 
-<style>
-/* 1. TIKTOK STYLE FULL SCREEN PLAYER */
-#videoOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    z-index: 10000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-/* Video ko lamba kheenchna (Vertical Fill) */
-#player {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 100vh;
-    width: 177.78vh; /* 16:9 ratio vertical fit */
-    object-fit: cover;
-    pointer-events: auto;
-}
-
-/* 2. VIBE MODE (3 LINES LEFT & RIGHT) */
-.vibe-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 10001;
-    display: none;
-}
-
-.vibe-line {
-    position: absolute;
-    width: 4px;
-    background: rgb(var(--vibe-color, 255, 215, 0));
-    box-shadow: 0 0 15px rgb(var(--vibe-color, 255, 215, 0));
-    border-radius: 10px;
-    animation: vibeDance 0.5s infinite ease-in-out alternate;
-}
-
-.left-1 { left: 0px; height: 30%; top: 35%; animation-duration: 0.4s; }
-.left-2 { left: 8px; height: 50%; top: 25%; animation-duration: 0.6s; }
-.left-3 { left: 16px; height: 40%; top: 30%; animation-duration: 0.5s; }
-
-.right-1 { right: 0px; height: 30%; top: 35%; animation-duration: 0.4s; }
-.right-2 { right: 8px; height: 50%; top: 25%; animation-duration: 0.6s; }
-.right-3 { right: 16px; height: 40%; top: 30%; animation-duration: 0.5s; }
-
-@keyframes vibeDance {
-    0% { transform: scaleY(1); opacity: 0.8; }
-    100% { transform: scaleY(1.5); opacity: 1; }
-}
-</style>
-
-<div id="vibeOverlay" class="vibe-container">
-    <div class="vibe-line left-1"></div>
-    <div class="vibe-line left-2"></div>
-    <div class="vibe-line left-3"></div>
-    <div class="vibe-line right-1"></div>
-    <div class="vibe-line right-2"></div>
-    <div class="vibe-line right-3"></div>
-    </div>
-  
-</html>
+        /* Controls Overlay */
+        .overlay-controls {
+            position: absolute; top: 20px; right: 20px; z-index: 5001;
+        }
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2); color: #fff;
+            border: none; padding: 10px 15px; border-radius: 20px;
+            font-size: 16px; cursor: pointer; backdrop-filter: blur(5px);
+      
