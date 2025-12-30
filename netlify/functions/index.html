@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamFlow Gold</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="gold">
+
+<header class="topbar">
+  <button id="menuBtn">☰</button>
+  <h1 style="font-size: 20px;">StreamFlow ⚡</h1>
+</header>
+
+<nav id="sidebar" class="sidebar">
+  <a data-page="home">🏠 Home</a>
+  <a data-page="search">🔍 Search</a>
+  <a data-page="library">🎵 Library</a>
+  <div class="themes">
+    <button onclick="setTheme('gold')">Gold</button>
+    <button onclick="setTheme('light')">Light</button>
+  </div>
+</nav>
+
+<main>
+  <section id="home" class="page active">
+    <h2>Welcome Back 🎧</h2>
+    <p style="color:#888; margin-top:5px">Ready to listen?</p>
+  </section>
+
+  <section id="search" class="page">
+    <h2>Search Songs</h2>
+    
+    <form onsubmit="event.preventDefault(); searchYT();" style="display: flex; gap: 10px; margin-top: 10px;">
+        <input type="search" id="searchInput" placeholder="Search song...">
+        <button type="submit" style="background: #d4af37; border:none; padding: 0 20px; border-radius: 25px; font-weight:bold; cursor:pointer;">GO</button>
+    </form>
+
+    <div id="player"></div>
+
+    <div class="cards" id="results"></div>
+  </section>
+
+  <section id="library" class="page">
+    <h2>Your Library ❤️</h2>
+    <p>Saved songs will appear here.</p>
+    <div class="cards" id="librarySongs"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
