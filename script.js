@@ -4,41 +4,32 @@ const sidebar = document.getElementById("sidebar");
 const pages = document.querySelectorAll(".page");
 const links = document.querySelectorAll(".sidebar a");
 
-// Toggle Sidebar
 if (menuBtn) {
-    menuBtn.onclick = () => {
-        sidebar.classList.toggle("show");
-    };
+    menuBtn.onclick = () => sidebar.classList.toggle("show");
 }
 
-// Close Sidebar when clicking outside
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
         sidebar.classList.remove("show");
     }
 });
 
-// Page Navigation
 links.forEach(l => {
     l.onclick = () => {
         pages.forEach(p => p.classList.remove("active"));
         const targetId = l.dataset.page;
         const targetPage = document.getElementById(targetId);
         if (targetPage) targetPage.classList.add("active");
-        
         sidebar.classList.remove("show");
-        
-        if (targetId === 'library') {
-            loadGlobalSongs();
-        }
+        if (targetId === 'library') loadGlobalSongs();
     }
 });
 
 function setTheme(t) { document.body.className = t; }
 
-// --- 2. YOUTUBE PLAYER SETUP (CORRECTED & SECURE) ---
+// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL HTTPS FIX) ---
 var tag = document.createElement('script');
-// ✅ YEH HAI ASLI AUR SAHI LINK (HTTPS):
+// ✅ YEH HAI OFFICIAL HTTPS LINK (Ye kabhi block nahi hogi):
 tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -54,30 +45,33 @@ function onYouTubeIframeAPIReady() {
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
-            // ✅ Origin line zaruri hai Vercel ke liye:
-            'origin': window.location.origin 
+            'origin': window.location.origin, // ✅ Vercel ke liye zaruri
+            'enablejsapi': 1
         },
         events: {
-            'onStateChange': onPlayerStateChange
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
         }
     });
 }
 
 function onPlayerStateChange(event) {
-    // Agar video play ho, to Vibe Mode check karo
     if (event.data == YT.PlayerState.PLAYING) {
         extractColorFromThumb();
     }
 }
 
-// --- 3. OVERLAY LOGIC (TIKTOK STYLE) ---
+function onPlayerError(event) {
+    console.log("YouTube Error:", event.data);
+}
+
+// --- 3. OVERLAY LOGIC ---
 const videoOverlay = document.getElementById('videoOverlay');
 const closeBtn = document.getElementById('closeBtn');
 
 if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
-        // Background play ke liye video stop mat karo
     }
 }
 
@@ -110,8 +104,6 @@ async function searchYT() {
             const videoId = item.url.split('v=')[1]; 
             const div = document.createElement("div");
             div.className = "card";
-            
-            // Thumbnail Image for Color Extraction
             const thumbUrl = item.thumbnail;
             
             div.innerHTML = `
@@ -126,7 +118,6 @@ async function searchYT() {
                     player.loadVideoById(videoId);
                     videoOverlay.classList.add('active');
                     
-                    // Set Thumbnail for Vibe extraction
                     const tempImg = new Image();
                     tempImg.crossOrigin = "Anonymous";
                     tempImg.src = thumbUrl;
@@ -152,7 +143,7 @@ async function searchYT() {
 async function loadGlobalSongs() {
     const libDiv = document.getElementById("librarySongs");
     if(!libDiv) return;
-    libDiv.innerHTML = "<p style='text-align:center; width:100%'>Library (Coming Soon on Vercel)...</p>";
+    libDiv.innerHTML = "<p style='text-align:center; width:100%'>Library coming soon...</p>";
 }
 
 // --- 6. SMART VIBE MODE LOGIC ---
@@ -175,29 +166,18 @@ function extractColorFromThumb() {
     
     if (img) {
         if (typeof ColorThief === 'undefined') return;
-
         const colorThief = new ColorThief();
-        
         const applyColor = () => {
             try {
                 const color = colorThief.getColor(img);
                 const rgb = `${color[0]}, ${color[1]}, ${color[2]}`;
                 document.documentElement.style.setProperty('--vibe-color', rgb);
-            } catch(e) {
-                console.log("Color extraction error", e);
-            }
+            } catch(e) {}
         };
-
-        if (img.complete) {
-            applyColor();
-        } else {
-            img.addEventListener('load', applyColor);
-        }
+        if (img.complete) applyColor();
+        else img.addEventListener('load', applyColor);
     }
 }
 
-// Add Listener for Vibe Overlay Click
 const vibeOverlay = document.getElementById('vibeOverlay');
-if(vibeOverlay) {
-    vibeOverlay.addEventListener('click', toggleVibeMode);
-}
+if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
