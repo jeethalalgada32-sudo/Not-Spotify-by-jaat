@@ -29,7 +29,7 @@ function setTheme(t) { document.body.className = t; }
 
 // --- 2. YOUTUBE PLAYER SETUP (OFFICIAL HTTPS) ---
 var tag = document.createElement('script');
-// ✅ YEH HAI OFFICIAL HTTPS LINK (Isme 's' hai, ye Secure hai):
+// ✅ AB YE SAHI HAI -> 'https' laga diya hai aur Official Link hai:
 tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -39,14 +39,13 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%',
         width: '100%',
-        videoId: '',
+        videoId: '', // Shuru me blank rahega
         playerVars: { 
             'autoplay': 1, 
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
             'origin': window.location.origin, // ✅ Vercel ke liye zaruri
-            'enablejsapi': 1
         },
         events: {
             'onStateChange': onPlayerStateChange,
@@ -72,6 +71,7 @@ const closeBtn = document.getElementById('closeBtn');
 if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
+        // Video chalta rahega (Background play)
     }
 }
 
@@ -181,3 +181,4 @@ function extractColorFromThumb() {
 
 const vibeOverlay = document.getElementById('vibeOverlay');
 if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
+        
