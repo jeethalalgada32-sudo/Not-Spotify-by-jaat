@@ -77,16 +77,27 @@ if (closeBtn) {
     }
 }
 
-// --- 4. SEARCH LOGIC (SUPER LIST 🌍) ---
-// Yahan humne 7 Top Servers dale hain. Ek nahi to dusra chalega!
+// --- 4. SEARCH LOGIC (MEGA LIST - 20+ SERVERS) 🌍💪 ---
 const API_LIST = [
-    "https://pipedapi.kavin.rocks",       // Standard
-    "https://api-piped.mha.fi",           // Finland (Fast)
-    "https://pipedapi.adminforge.de",     // Germany (Super Fast)
-    "https://pipedapi.smnz.de",           // Germany Backup
-    "https://api.piped.privacy.com.de",   // Privacy Focused
-    "https://pipedapi.drgns.space",       // US Server
-    "https://pipedapi.tokhmi.xyz"         // Backup
+    "https://pipedapi.kavin.rocks",
+    "https://pipedapi.drgns.space",
+    "https://api-piped.mha.fi",
+    "https://pipedapi.tokhmi.xyz",
+    "https://pipedapi.moomoo.me",
+    "https://pipedapi.syncpundit.io",
+    "https://pipedapi.leptons.xyz",
+    "https://pipedapi.r4fo.com",
+    "https://pipedapi.ducks.party",
+    "https://api.piped.privacy.com.de",
+    "https://pipedapi.smnz.de",
+    "https://pipedapi.adminforge.de",
+    "https://piped-api.garudalinux.org",
+    "https://pipedapi.kavin.rocks",
+    "https://pa.il.ax",
+    "https://p.eji.io",
+    "https://piped-api.lunar.icu",
+    "https://ytapi.dc09.ru",
+    "https://pipedapi.aeong.one"
 ];
 
 async function searchYT() {
@@ -96,31 +107,46 @@ async function searchYT() {
     if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
     if (!query) return;
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🌍</p>";
+    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching (Trying all servers)... 🌍</p>";
 
     let data = null;
     let success = false;
 
-    // Har server ko bari-bari try karo
+    // Loop through MEGA LIST
     for (const api of API_LIST) {
         try {
-            // console.log("Trying:", api); // Testing ke liye
-            const res = await fetch(`${api}/search?q=${query}&filter=all`);
+            // Timeout lagaya hai taaki agar koi server slow ho to uspe time waste na ho
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second max wait per server
+
+            const res = await fetch(`${api}/search?q=${query}&filter=music_videos`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) throw new Error("Blocked");
+            
             data = await res.json();
             
             if (data.items && data.items.length > 0) {
                 success = true;
-                break; // Mil gaya data! Loop roko.
+                break; // Mil gaya! Roko loop.
             }
         } catch (err) {
-            continue; // Ye fail hua? Agla try karo!
+            continue; // Fail hua? Next pe kudo.
         }
     }
 
     resultsDiv.innerHTML = "";
 
     if (!success || !data) {
-        resultsDiv.innerHTML = "<p style='width:100%; text-align:center; color:red;'>Servers Busy. Try specific song name!</p>";
+        resultsDiv.innerHTML = `
+            <div style='text-align:center; width:100%; padding:20px;'>
+                <p style='color:red; font-weight:bold;'>All 20+ Servers Failed 😓</p>
+                <p>Vercel IP is heavily blocked right now.</p>
+                <button onclick="searchYT()" style="background:#ffd700; border:none; padding:10px; border-radius:5px; margin-top:10px;">Try Again</button>
+            </div>
+        `;
         return;
     }
 
