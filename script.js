@@ -175,3 +175,41 @@ async function searchYT() {
     }
                                         }
     
+// --- SMART VIBE MODE LOGIC ---
+function toggleVibeMode() {
+    const overlay = document.getElementById('vibeOverlay');
+    if (overlay.style.display === 'block') {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    } else {
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        extractColorFromThumb();
+    }
+}
+
+function extractColorFromThumb() {
+    // Try to find the image in the player
+    // Note: Since we are using YouTube iframe, getting color is tricky.
+    // This connects to the main thumbnail if available on screen
+    const img = document.querySelector('.song-thumbnail') || document.querySelector('img'); 
+    
+    if (img) {
+        const colorThief = new ColorThief();
+        if (img.complete) {
+            try {
+                const color = colorThief.getColor(img);
+                document.documentElement.style.setProperty('--vibe-color', `${color[0]}, ${color[1]}, ${color[2]}`);
+            } catch(e) { console.log("Color extraction restricted"); }
+        } else {
+            img.addEventListener('load', function() {
+                try {
+                    const color = colorThief.getColor(img);
+                    document.documentElement.style.setProperty('--vibe-color', `${color[0]}, ${color[1]}, ${color[2]}`);
+                } catch(e) {}
+            });
+        }
+    }
+}
+
+document.getElementById('vibeOverlay').addEventListener('click', toggleVibeMode);
