@@ -11,7 +11,7 @@ if (menuBtn) {
     };
 }
 
-// Close Sidebar when clicking outside (Optional but good)
+// Close Sidebar when clicking outside
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
         sidebar.classList.remove("show");
@@ -36,10 +36,9 @@ links.forEach(l => {
 
 function setTheme(t) { document.body.className = t; }
 
-// --- 2. YOUTUBE PLAYER SETUP (FIXED) ---
-// --- 2. YOUTUBE PLAYER SETUP (FIXED HTTPS) ---
+// --- 2. YOUTUBE PLAYER SETUP (CORRECTED & SECURE) ---
 var tag = document.createElement('script');
-// Galti yahi thi -> Ab hum OFFICIAL aur SECURE link use karenge:
+// ✅ YEH HAI ASLI AUR SAHI LINK (HTTPS):
 tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -55,9 +54,8 @@ function onYouTubeIframeAPIReady() {
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
-            // Ye dono lines bahut zaruri hain mobile ke liye:
-            'origin': window.location.origin, 
-            'host': 'https://www.youtube.com'
+            // ✅ Origin line zaruri hai Vercel ke liye:
+            'origin': window.location.origin 
         },
         events: {
             'onStateChange': onPlayerStateChange
@@ -66,11 +64,11 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerStateChange(event) {
+    // Agar video play ho, to Vibe Mode check karo
     if (event.data == YT.PlayerState.PLAYING) {
         extractColorFromThumb();
     }
 }
-
 
 // --- 3. OVERLAY LOGIC (TIKTOK STYLE) ---
 const videoOverlay = document.getElementById('videoOverlay');
@@ -79,9 +77,7 @@ const closeBtn = document.getElementById('closeBtn');
 if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
-        // Video band nahi karna (Background Play)
-        // Agar rokna hai to uncomment karein:
-        // if (player && player.stopVideo) player.stopVideo();
+        // Background play ke liye video stop mat karo
     }
 }
 
@@ -131,14 +127,12 @@ async function searchYT() {
                     videoOverlay.classList.add('active');
                     
                     // Set Thumbnail for Vibe extraction
-                    // (Hum fake image create kar rahe hain extraction ke liye)
                     const tempImg = new Image();
                     tempImg.crossOrigin = "Anonymous";
                     tempImg.src = thumbUrl;
                     tempImg.id = "current-vibe-img";
                     tempImg.style.display = "none";
                     
-                    // Purana hatao, naya lagao
                     const oldImg = document.getElementById("current-vibe-img");
                     if(oldImg) oldImg.remove();
                     document.body.appendChild(tempImg);
@@ -154,36 +148,32 @@ async function searchYT() {
     }
 }
 
-// --- 5. LIBRARY LOGIC (Cloud) ---
-// Note: Vercel pe Netlify Functions direct nahi chalenge, par code safe rakha hai.
+// --- 5. LIBRARY LOGIC ---
 async function loadGlobalSongs() {
     const libDiv = document.getElementById("librarySongs");
     if(!libDiv) return;
-    
     libDiv.innerHTML = "<p style='text-align:center; width:100%'>Library (Coming Soon on Vercel)...</p>";
 }
 
-// --- 6. SMART VIBE MODE LOGIC (Colors) ---
+// --- 6. SMART VIBE MODE LOGIC ---
 function toggleVibeMode() {
     const overlay = document.getElementById('vibeOverlay');
     if (!overlay) return;
     
     if (overlay.style.display === 'block') {
         overlay.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable Scroll
+        document.body.style.overflow = 'auto'; 
     } else {
         overlay.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Disable Scroll (Lock)
+        document.body.style.overflow = 'hidden';
         extractColorFromThumb();
     }
 }
 
 function extractColorFromThumb() {
-    // Koshish karo current song ka image dhundne ki
     const img = document.getElementById('current-vibe-img') || document.querySelector('.card img'); 
     
     if (img) {
-        // ColorThief library honi chahiye index.html me
         if (typeof ColorThief === 'undefined') return;
 
         const colorThief = new ColorThief();
@@ -194,7 +184,7 @@ function extractColorFromThumb() {
                 const rgb = `${color[0]}, ${color[1]}, ${color[2]}`;
                 document.documentElement.style.setProperty('--vibe-color', rgb);
             } catch(e) {
-                console.log("Color extraction error (CORS or Loading)", e);
+                console.log("Color extraction error", e);
             }
         };
 
@@ -210,5 +200,4 @@ function extractColorFromThumb() {
 const vibeOverlay = document.getElementById('vibeOverlay');
 if(vibeOverlay) {
     vibeOverlay.addEventListener('click', toggleVibeMode);
-        }
-    
+}
