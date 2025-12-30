@@ -84,8 +84,9 @@ if (closeBtn) {
     }
 }
 
-// --- 4. SEARCH LOGIC (GLOBAL UNLOCKED) 🌍 ---
-const PIPED_API = "https://pipedapi.kavin.rocks";
+// --- 4. SEARCH LOGIC (NEW FAST SERVER 🚀) ---
+// Purana wala server busy tha, ye naya wala hai:
+const PIPED_API = "https://pipedapi.drgns.space"; 
 
 async function searchYT() {
     const query = document.getElementById("searchInput").value.trim();
@@ -94,22 +95,21 @@ async function searchYT() {
     if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
     if (!query) return;
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching Worldwide... 🌍</p>";
+    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🎵</p>";
 
     try {
-        // 👇 YAHAN CHANGE KIYA HAI: 'filter=music_videos' hata diya.
-        // Ab 'filter=all' hai, matlab sab kuch search hoga!
+        // filter=all rakha hai taaki sab mile
         const res = await fetch(`${PIPED_API}/search?q=${query}&filter=all`);
         const data = await res.json();
         
         resultsDiv.innerHTML = "";
 
         if (!data.items || data.items.length === 0) {
-            resultsDiv.innerHTML = "<p style='width:100%; text-align:center;'>No results found</p>";
+            resultsDiv.innerHTML = "<p style='width:100%; text-align:center;'>No results found (Server Busy). Try again later.</p>";
             return;
         }
 
-        data.items.slice(0, 20).forEach(item => { // Ab 15 ki jagah 20 gaane dikhenge
+        data.items.slice(0, 20).forEach(item => {
             if (item.type !== 'stream') return;
             
             let videoId = item.url.split('v=')[1];
@@ -148,7 +148,7 @@ async function searchYT() {
         });
     } catch (err) {
         console.error(err);
-        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Error searching. Try again.</p>";
+        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Search Failed. Trying Backup Server...</p>";
     }
 }
 
@@ -196,4 +196,4 @@ function extractColorFromThumb() {
 
 const vibeOverlay = document.getElementById('vibeOverlay');
 if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
-                    
+                                                         
