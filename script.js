@@ -1,21 +1,34 @@
-// --- SIDEBAR & THEME LOGIC ---
+// --- 1. SIDEBAR & THEME LOGIC ---
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
 const pages = document.querySelectorAll(".page");
 const links = document.querySelectorAll(".sidebar a");
 
-if(menuBtn) {
-    menuBtn.onclick = () => sidebar.classList.toggle("show");
+// Toggle Sidebar
+if (menuBtn) {
+    menuBtn.onclick = () => {
+        sidebar.classList.toggle("show");
+    };
 }
 
+// Close Sidebar when clicking outside (Optional but good)
+document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
+        sidebar.classList.remove("show");
+    }
+});
+
+// Page Navigation
 links.forEach(l => {
     l.onclick = () => {
         pages.forEach(p => p.classList.remove("active"));
-        document.getElementById(l.dataset.page).classList.add("active");
+        const targetId = l.dataset.page;
+        const targetPage = document.getElementById(targetId);
+        if (targetPage) targetPage.classList.add("active");
+        
         sidebar.classList.remove("show");
         
-        // Agar Library page khula, to Cloud se gaane mangwao
-        if(l.dataset.page === 'library') {
+        if (targetId === 'library') {
             loadGlobalSongs();
         }
     }
@@ -23,9 +36,9 @@ links.forEach(l => {
 
 function setTheme(t) { document.body.className = t; }
 
-// --- YOUTUBE PLAYER SETUP (FIXED FOR VERCEL) ---
+// --- 2. YOUTUBE PLAYER SETUP (FIXED) ---
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api"; // Updated to official API URL
+tag.src = "https://www.youtube.com/iframe_api"; // ✅ Correct Secure URL
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -40,99 +53,45 @@ function onYouTubeIframeAPIReady() {
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
-            'origin': window.location.origin // <--- YE WALI LINE JODI HAI (IMPORTANT)
+            'origin': window.location.origin // ✅ Fixed for Vercel
+        },
+        events: {
+            'onStateChange': onPlayerStateChange
         }
     });
 }
 
-// --- OVERLAY LOGIC ---
+function onPlayerStateChange(event) {
+    // Agar video play ho, to Vibe Mode check karo
+    if (event.data == YT.PlayerState.PLAYING) {
+        extractColorFromThumb();
+    }
+}
+
+// --- 3. OVERLAY LOGIC (TIKTOK STYLE) ---
 const videoOverlay = document.getElementById('videoOverlay');
 const closeBtn = document.getElementById('closeBtn');
 
-if(closeBtn) {
+if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
-        if (player && player.stopVideo) player.stopVideo();
+        // Video band nahi karna (Background Play)
+        // Agar rokna hai to uncomment karein:
+        // if (player && player.stopVideo) player.stopVideo();
     }
 }
 
-// --- DATABASE: SAVE SONG (Dil Wala Kaam) ❤️ ---
-async function saveToCloud(title, videoId, thumbnail) {
-    const btn = event.target; // Jis button pe click hua
-    btn.innerText = "⏳"; // Loading dikhao
-
-    try {
-        // Note: Netlify functions might not work on Vercel directly without config, 
-        // but keeping code intact for now.
-        const response = await fetch('/.netlify/functions/songs', {
-            method: 'POST',
-            body: JSON.stringify({ title, videoId, thumbnail })
-        });
-        
-        if(response.ok) {
-            btn.innerText = "✅"; // Success
-            alert("Song Saved to Global Database! 🌍");
-        } else {
-            btn.innerText = "❌";
-        }
-    } catch (err) {
-        console.error(err);
-        btn.innerText = "❌";
-        alert("Error saving song");
-    }
-    // Button click hone par gaana play na ho, isliye stopPropagation
-    event.stopPropagation(); 
-}
-
-// --- DATABASE: LOAD SONGS (Library) ---
-async function loadGlobalSongs() {
-    const libDiv = document.getElementById("librarySongs");
-    libDiv.innerHTML = "<p style='text-align:center; width:100%'>Loading from Cloud... ☁️</p>";
-    
-    try {
-        const res = await fetch('/.netlify/functions/songs');
-        const songs = await res.json();
-        
-        libDiv.innerHTML = ""; // Clear loading text
-        
-        if(songs.length === 0) {
-            libDiv.innerHTML = "<p style='text-align:center; width:100%'>No songs yet. Go search and add some! ❤️</p>";
-            return;
-        }
-
-        songs.forEach(song => {
-            const div = document.createElement("div");
-            div.className = "card";
-            div.innerHTML = `
-                <img src="${song.thumbnail}" onerror="this.src='https://via.placeholder.com/150'">
-                <p>${song.title}</p>
-                <small style="color:#d4af37; font-size:10px;">Global Hit 🌍</small>
-            `;
-            div.onclick = () => {
-                if(player) {
-                    player.loadVideoById(song.video_id);
-                    videoOverlay.classList.add('active');
-                }
-            };
-            libDiv.appendChild(div);
-        });
-    } catch (err) {
-        console.error(err);
-        libDiv.innerHTML = "<p style='text-align:center; color:red'>Database Error. Refresh page.</p>";
-    }
-}
-
-// --- SEARCH LOGIC (With Save Button) ---
+// --- 4. SEARCH LOGIC ---
 const PIPED_API = "https://pipedapi.kavin.rocks";
 
 async function searchYT() {
     const query = document.getElementById("searchInput").value.trim();
     const resultsDiv = document.getElementById("results");
 
-    document.getElementById("searchInput").blur(); 
+    if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
     if (!query) return;
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching...</p>";
+    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🎵</p>";
 
     try {
         const res = await fetch(`${PIPED_API}/search?q=${query}&filter=music_videos`);
@@ -141,13 +100,111 @@ async function searchYT() {
         resultsDiv.innerHTML = "";
 
         if (!data.items || data.items.length === 0) {
-            resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>No results found</p>";
+            resultsDiv.innerHTML = "<p style='width:100%; text-align:center;'>No results found</p>";
             return;
         }
 
         data.items.slice(0, 15).forEach(item => {
             if (item.type !== 'stream') return;
-            const videoId = item.url.split('v=')[1]; 
             
-            const div = document.createElement("div
-                                               
+            const videoId = item.url.split('v=')[1]; 
+            const div = document.createElement("div");
+            div.className = "card";
+            
+            // Thumbnail Image for Color Extraction
+            const thumbUrl = item.thumbnail;
+            
+            div.innerHTML = `
+                <img src="${thumbUrl}" class="song-thumbnail" crossorigin="anonymous">
+                <div class="card-info">
+                    <p>${item.title}</p>
+                </div>
+            `;
+            
+            div.onclick = () => {
+                if (player) {
+                    player.loadVideoById(videoId);
+                    videoOverlay.classList.add('active');
+                    
+                    // Set Thumbnail for Vibe extraction
+                    // (Hum fake image create kar rahe hain extraction ke liye)
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "Anonymous";
+                    tempImg.src = thumbUrl;
+                    tempImg.id = "current-vibe-img";
+                    tempImg.style.display = "none";
+                    
+                    // Purana hatao, naya lagao
+                    const oldImg = document.getElementById("current-vibe-img");
+                    if(oldImg) oldImg.remove();
+                    document.body.appendChild(tempImg);
+                    
+                    setTimeout(extractColorFromThumb, 1000);
+                }
+            };
+            resultsDiv.appendChild(div);
+        });
+    } catch (err) {
+        console.error(err);
+        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Error searching.</p>";
+    }
+}
+
+// --- 5. LIBRARY LOGIC (Cloud) ---
+// Note: Vercel pe Netlify Functions direct nahi chalenge, par code safe rakha hai.
+async function loadGlobalSongs() {
+    const libDiv = document.getElementById("librarySongs");
+    if(!libDiv) return;
+    
+    libDiv.innerHTML = "<p style='text-align:center; width:100%'>Library (Coming Soon on Vercel)...</p>";
+}
+
+// --- 6. SMART VIBE MODE LOGIC (Colors) ---
+function toggleVibeMode() {
+    const overlay = document.getElementById('vibeOverlay');
+    if (!overlay) return;
+    
+    if (overlay.style.display === 'block') {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Enable Scroll
+    } else {
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Disable Scroll (Lock)
+        extractColorFromThumb();
+    }
+}
+
+function extractColorFromThumb() {
+    // Koshish karo current song ka image dhundne ki
+    const img = document.getElementById('current-vibe-img') || document.querySelector('.card img'); 
+    
+    if (img) {
+        // ColorThief library honi chahiye index.html me
+        if (typeof ColorThief === 'undefined') return;
+
+        const colorThief = new ColorThief();
+        
+        const applyColor = () => {
+            try {
+                const color = colorThief.getColor(img);
+                const rgb = `${color[0]}, ${color[1]}, ${color[2]}`;
+                document.documentElement.style.setProperty('--vibe-color', rgb);
+            } catch(e) {
+                console.log("Color extraction error (CORS or Loading)", e);
+            }
+        };
+
+        if (img.complete) {
+            applyColor();
+        } else {
+            img.addEventListener('load', applyColor);
+        }
+    }
+}
+
+// Add Listener for Vibe Overlay Click
+const vibeOverlay = document.getElementById('vibeOverlay');
+if(vibeOverlay) {
+    vibeOverlay.addEventListener('click', toggleVibeMode);
+        }
+    
