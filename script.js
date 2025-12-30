@@ -5,32 +5,43 @@ const pages = document.querySelectorAll(".page");
 const links = document.querySelectorAll(".sidebar a");
 
 if (menuBtn) {
-    menuBtn.onclick = () => sidebar.classList.toggle("show");
+    menuBtn.onclick = () => {
+        sidebar.classList.toggle("show");
+    };
 }
 
+// Close Sidebar when clicking outside
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
         sidebar.classList.remove("show");
     }
 });
 
+// Page Navigation
 links.forEach(l => {
     l.onclick = () => {
         pages.forEach(p => p.classList.remove("active"));
         const targetId = l.dataset.page;
         const targetPage = document.getElementById(targetId);
         if (targetPage) targetPage.classList.add("active");
+        
         sidebar.classList.remove("show");
-        if (targetId === 'library') loadGlobalSongs();
+        
+        if (targetId === 'library') {
+            loadGlobalSongs();
+        }
     }
 });
 
 function setTheme(t) { document.body.className = t; }
 
-// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL HTTPS) ---
+// --- 2. YOUTUBE PLAYER SETUP (FINAL & SECURE) ---
 var tag = document.createElement('script');
-// ✅ AB YE SAHI HAI -> 'https' laga diya hai aur Official Link hai:
+
+// 🔴 MAIN FIX: Humne 'http' hata kar OFFICIAL 'https' laga diya hai.
+// Ye link puri duniya me chalti hai aur kabhi block nahi hogi.
 tag.src = "https://www.youtube.com/iframe_api"; 
+
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -39,13 +50,15 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%',
         width: '100%',
-        videoId: '', // Shuru me blank rahega
+        videoId: '', // Start blank
         playerVars: { 
             'autoplay': 1, 
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
-            'origin': window.location.origin, // ✅ Vercel ke liye zaruri
+            'enablejsapi': 1,
+            // ✅ Origin fix for Vercel/Mobile
+            'origin': window.location.origin 
         },
         events: {
             'onStateChange': onPlayerStateChange,
@@ -55,13 +68,14 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerStateChange(event) {
+    // Jab video play ho, tabhi color uthao
     if (event.data == YT.PlayerState.PLAYING) {
         extractColorFromThumb();
     }
 }
 
 function onPlayerError(event) {
-    console.log("YouTube Error:", event.data);
+    console.error("YouTube Player Error:", event.data);
 }
 
 // --- 3. OVERLAY LOGIC ---
@@ -71,11 +85,11 @@ const closeBtn = document.getElementById('closeBtn');
 if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
-        // Video chalta rahega (Background play)
+        // Video chalta rahega background me
     }
 }
 
-// --- 4. SEARCH LOGIC ---
+// --- 4. SEARCH LOGIC (Piped API) ---
 const PIPED_API = "https://pipedapi.kavin.rocks";
 
 async function searchYT() {
@@ -101,7 +115,10 @@ async function searchYT() {
         data.items.slice(0, 15).forEach(item => {
             if (item.type !== 'stream') return;
             
-            const videoId = item.url.split('v=')[1]; 
+            // Extract Video ID safely
+            let videoId = item.url.split('v=')[1];
+            if(videoId.includes('&')) videoId = videoId.split('&')[0]; // Extra safayi
+
             const div = document.createElement("div");
             div.className = "card";
             const thumbUrl = item.thumbnail;
@@ -118,6 +135,7 @@ async function searchYT() {
                     player.loadVideoById(videoId);
                     videoOverlay.classList.add('active');
                     
+                    // Vibe Mode ke liye image set karo
                     const tempImg = new Image();
                     tempImg.crossOrigin = "Anonymous";
                     tempImg.src = thumbUrl;
@@ -128,6 +146,7 @@ async function searchYT() {
                     if(oldImg) oldImg.remove();
                     document.body.appendChild(tempImg);
                     
+                    // Thoda ruk kar color nikalo taaki image load ho jaye
                     setTimeout(extractColorFromThumb, 1000);
                 }
             };
@@ -135,7 +154,7 @@ async function searchYT() {
         });
     } catch (err) {
         console.error(err);
-        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Error searching.</p>";
+        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Search Failed. Try again.</p>";
     }
 }
 
@@ -166,19 +185,28 @@ function extractColorFromThumb() {
     
     if (img) {
         if (typeof ColorThief === 'undefined') return;
+        
         const colorThief = new ColorThief();
         const applyColor = () => {
             try {
                 const color = colorThief.getColor(img);
                 const rgb = `${color[0]}, ${color[1]}, ${color[2]}`;
                 document.documentElement.style.setProperty('--vibe-color', rgb);
-            } catch(e) {}
+            } catch(e) {
+                // Agar color na mile, to default Gold color laga do
+                console.log("Color Defaulting");
+                document.documentElement.style.setProperty('--vibe-color', '255, 215, 0');
+            }
         };
+
         if (img.complete) applyColor();
         else img.addEventListener('load', applyColor);
     }
 }
 
+// Add Listener
 const vibeOverlay = document.getElementById('vibeOverlay');
-if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
-        
+if(vibeOverlay) {
+    vibeOverlay.addEventListener('click', toggleVibeMode);
+}
+    
