@@ -52,4 +52,78 @@
 
 <script src="script.js"></script>
 </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+
+<style>
+/* 1. TIKTOK STYLE FULL SCREEN PLAYER */
+#videoOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Video ko lamba kheenchna (Vertical Fill) */
+#player {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 100vh;
+    width: 177.78vh; /* 16:9 ratio vertical fit */
+    object-fit: cover;
+    pointer-events: auto;
+}
+
+/* 2. VIBE MODE (3 LINES LEFT & RIGHT) */
+.vibe-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10001;
+    display: none;
+}
+
+.vibe-line {
+    position: absolute;
+    width: 4px;
+    background: rgb(var(--vibe-color, 255, 215, 0));
+    box-shadow: 0 0 15px rgb(var(--vibe-color, 255, 215, 0));
+    border-radius: 10px;
+    animation: vibeDance 0.5s infinite ease-in-out alternate;
+}
+
+.left-1 { left: 0px; height: 30%; top: 35%; animation-duration: 0.4s; }
+.left-2 { left: 8px; height: 50%; top: 25%; animation-duration: 0.6s; }
+.left-3 { left: 16px; height: 40%; top: 30%; animation-duration: 0.5s; }
+
+.right-1 { right: 0px; height: 30%; top: 35%; animation-duration: 0.4s; }
+.right-2 { right: 8px; height: 50%; top: 25%; animation-duration: 0.6s; }
+.right-3 { right: 16px; height: 40%; top: 30%; animation-duration: 0.5s; }
+
+@keyframes vibeDance {
+    0% { transform: scaleY(1); opacity: 0.8; }
+    100% { transform: scaleY(1.5); opacity: 1; }
+}
+</style>
+
+<div id="vibeOverlay" class="vibe-container">
+    <div class="vibe-line left-1"></div>
+    <div class="vibe-line left-2"></div>
+    <div class="vibe-line left-3"></div>
+    <div class="vibe-line right-1"></div>
+    <div class="vibe-line right-2"></div>
+    <div class="vibe-line right-3"></div>
+    </div>
+  
 </html>
