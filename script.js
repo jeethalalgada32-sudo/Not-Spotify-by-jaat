@@ -10,14 +10,12 @@ if (menuBtn) {
     };
 }
 
-// Close Sidebar when clicking outside
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
         sidebar.classList.remove("show");
     }
 });
 
-// Page Navigation
 links.forEach(l => {
     l.onclick = () => {
         pages.forEach(p => p.classList.remove("active"));
@@ -35,13 +33,9 @@ links.forEach(l => {
 
 function setTheme(t) { document.body.className = t; }
 
-// --- 2. YOUTUBE PLAYER SETUP (FINAL & SECURE) ---
+// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL & SECURE) ---
 var tag = document.createElement('script');
-
-// 🔴 MAIN FIX: Humne 'http' hata kar OFFICIAL 'https' laga diya hai.
-// Ye link puri duniya me chalti hai aur kabhi block nahi hogi.
 tag.src = "https://www.youtube.com/iframe_api"; 
-
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -50,15 +44,15 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%',
         width: '100%',
-        videoId: '', // Start blank
+        videoId: '',
         playerVars: { 
             'autoplay': 1, 
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
             'enablejsapi': 1,
-            // ✅ Origin fix for Vercel/Mobile
-            'origin': window.location.origin 
+            'origin': window.location.origin, 
+            'host': 'https://www.youtube.com' 
         },
         events: {
             'onStateChange': onPlayerStateChange,
@@ -68,14 +62,16 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerStateChange(event) {
-    // Jab video play ho, tabhi color uthao
     if (event.data == YT.PlayerState.PLAYING) {
         extractColorFromThumb();
     }
 }
 
 function onPlayerError(event) {
-    console.error("YouTube Player Error:", event.data);
+    console.error("YouTube Error:", event.data);
+    if (event.data === 150 || event.data === 101) {
+        alert("⚠️ Yeh gaana Mobile pe Allowed nahi hai (Copyright). Dusra gaana try karo!");
+    }
 }
 
 // --- 3. OVERLAY LOGIC ---
@@ -85,11 +81,10 @@ const closeBtn = document.getElementById('closeBtn');
 if (closeBtn) {
     closeBtn.onclick = () => {
         videoOverlay.classList.remove('active');
-        // Video chalta rahega background me
     }
 }
 
-// --- 4. SEARCH LOGIC (Piped API) ---
+// --- 4. SEARCH LOGIC (GLOBAL UNLOCKED) 🌍 ---
 const PIPED_API = "https://pipedapi.kavin.rocks";
 
 async function searchYT() {
@@ -99,10 +94,12 @@ async function searchYT() {
     if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
     if (!query) return;
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🎵</p>";
+    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching Worldwide... 🌍</p>";
 
     try {
-        const res = await fetch(`${PIPED_API}/search?q=${query}&filter=music_videos`);
+        // 👇 YAHAN CHANGE KIYA HAI: 'filter=music_videos' hata diya.
+        // Ab 'filter=all' hai, matlab sab kuch search hoga!
+        const res = await fetch(`${PIPED_API}/search?q=${query}&filter=all`);
         const data = await res.json();
         
         resultsDiv.innerHTML = "";
@@ -112,12 +109,11 @@ async function searchYT() {
             return;
         }
 
-        data.items.slice(0, 15).forEach(item => {
+        data.items.slice(0, 20).forEach(item => { // Ab 15 ki jagah 20 gaane dikhenge
             if (item.type !== 'stream') return;
             
-            // Extract Video ID safely
             let videoId = item.url.split('v=')[1];
-            if(videoId.includes('&')) videoId = videoId.split('&')[0]; // Extra safayi
+            if(videoId.includes('&')) videoId = videoId.split('&')[0];
 
             const div = document.createElement("div");
             div.className = "card";
@@ -135,7 +131,6 @@ async function searchYT() {
                     player.loadVideoById(videoId);
                     videoOverlay.classList.add('active');
                     
-                    // Vibe Mode ke liye image set karo
                     const tempImg = new Image();
                     tempImg.crossOrigin = "Anonymous";
                     tempImg.src = thumbUrl;
@@ -146,7 +141,6 @@ async function searchYT() {
                     if(oldImg) oldImg.remove();
                     document.body.appendChild(tempImg);
                     
-                    // Thoda ruk kar color nikalo taaki image load ho jaye
                     setTimeout(extractColorFromThumb, 1000);
                 }
             };
@@ -154,7 +148,7 @@ async function searchYT() {
         });
     } catch (err) {
         console.error(err);
-        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Search Failed. Try again.</p>";
+        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Error searching. Try again.</p>";
     }
 }
 
@@ -185,7 +179,6 @@ function extractColorFromThumb() {
     
     if (img) {
         if (typeof ColorThief === 'undefined') return;
-        
         const colorThief = new ColorThief();
         const applyColor = () => {
             try {
@@ -193,20 +186,14 @@ function extractColorFromThumb() {
                 const rgb = `${color[0]}, ${color[1]}, ${color[2]}`;
                 document.documentElement.style.setProperty('--vibe-color', rgb);
             } catch(e) {
-                // Agar color na mile, to default Gold color laga do
-                console.log("Color Defaulting");
                 document.documentElement.style.setProperty('--vibe-color', '255, 215, 0');
             }
         };
-
         if (img.complete) applyColor();
         else img.addEventListener('load', applyColor);
     }
 }
 
-// Add Listener
 const vibeOverlay = document.getElementById('vibeOverlay');
-if(vibeOverlay) {
-    vibeOverlay.addEventListener('click', toggleVibeMode);
-}
-    
+if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
+                    
