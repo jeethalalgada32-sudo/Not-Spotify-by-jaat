@@ -29,7 +29,7 @@ function setTheme(t) { document.body.className = t; }
 
 // --- 2. YOUTUBE PLAYER SETUP (OFFICIAL & SECURE) ---
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api"; // ✅ Official HTTPS API
+tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -45,7 +45,7 @@ function onYouTubeIframeAPIReady() {
             'rel': 0, 
             'controls': 1,
             'origin': window.location.origin, 
-            'host': 'https://www.youtube.com' // ✅ Correct Host
+            'host': 'https://www.youtube.com' 
         },
         events: {
             'onStateChange': onPlayerStateChange,
@@ -77,14 +77,16 @@ if (closeBtn) {
     }
 }
 
-// --- 4. SEARCH LOGIC (AVENGERS TEAM 🛡️) ---
-// Yahan humne 5 alag-alag servers ki list banayi hai.
+// --- 4. SEARCH LOGIC (SUPER LIST 🌍) ---
+// Yahan humne 7 Top Servers dale hain. Ek nahi to dusra chalega!
 const API_LIST = [
-    "https://pipedapi.kavin.rocks",     // 1. Official
-    "https://pipedapi.tokhmi.xyz",      // 2. Backup 1
-    "https://pipedapi.moomoo.me",       // 3. Backup 2
-    "https://pipedapi.syncpundit.io",   // 4. Backup 3
-    "https://api-piped.mha.fi"          // 5. Backup 4
+    "https://pipedapi.kavin.rocks",       // Standard
+    "https://api-piped.mha.fi",           // Finland (Fast)
+    "https://pipedapi.adminforge.de",     // Germany (Super Fast)
+    "https://pipedapi.smnz.de",           // Germany Backup
+    "https://api.piped.privacy.com.de",   // Privacy Focused
+    "https://pipedapi.drgns.space",       // US Server
+    "https://pipedapi.tokhmi.xyz"         // Backup
 ];
 
 async function searchYT() {
@@ -94,35 +96,34 @@ async function searchYT() {
     if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
     if (!query) return;
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🎵</p>";
+    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🌍</p>";
 
-    // Loop through API List (Avengers Strategy)
     let data = null;
     let success = false;
 
+    // Har server ko bari-bari try karo
     for (const api of API_LIST) {
         try {
-            console.log("Trying Server:", api); // Console me dekhna kaunsa server chala
+            // console.log("Trying:", api); // Testing ke liye
             const res = await fetch(`${api}/search?q=${query}&filter=all`);
             data = await res.json();
             
             if (data.items && data.items.length > 0) {
                 success = true;
-                break; // Agar data mil gaya, to loop yahi roko!
+                break; // Mil gaya data! Loop roko.
             }
         } catch (err) {
-            console.log("Server Failed:", api); // Ye server fail hua, agla try karo
+            continue; // Ye fail hua? Agla try karo!
         }
     }
 
     resultsDiv.innerHTML = "";
 
     if (!success || !data) {
-        resultsDiv.innerHTML = "<p style='width:100%; text-align:center; color:red;'>All Servers Busy. Try again in 1 min! 😓</p>";
+        resultsDiv.innerHTML = "<p style='width:100%; text-align:center; color:red;'>Servers Busy. Try specific song name!</p>";
         return;
     }
 
-    // Result Show Karo
     data.items.slice(0, 20).forEach(item => {
         if (item.type !== 'stream') return;
         
@@ -206,4 +207,4 @@ function extractColorFromThumb() {
 
 const vibeOverlay = document.getElementById('vibeOverlay');
 if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
-        
+            
