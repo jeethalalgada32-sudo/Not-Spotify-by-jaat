@@ -96,4 +96,86 @@
             background: rgba(255, 255, 255, 0.2); color: #fff;
             border: none; padding: 10px 15px; border-radius: 20px;
             font-size: 16px; cursor: pointer; backdrop-filter: blur(5px);
-      
+        }
+
+        /* --- VIBE MODE LINES --- */
+        #vibeOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 4000; display: none;
+        }
+        .vibe-line {
+            position: absolute; width: 6px; border-radius: 10px;
+            background: rgb(var(--vibe-color));
+            box-shadow: 0 0 20px rgb(var(--vibe-color));
+            animation: dance 0.5s infinite alternate ease-in-out;
+        }
+        .left-1 { left: 0; height: 40%; top: 30%; animation-delay: 0s; }
+        .left-2 { left: 10px; height: 60%; top: 20%; animation-delay: 0.1s; }
+        .right-1 { right: 0; height: 40%; top: 30%; animation-delay: 0s; }
+        .right-2 { right: 10px; height: 60%; top: 20%; animation-delay: 0.1s; }
+
+        @keyframes dance { 0% { transform: scaleY(1); } 100% { transform: scaleY(1.5); } }
+
+        /* --- MENU BTN --- */
+        #menuBtn { font-size: 24px; cursor: pointer; }
+        
+        /* --- SIDEBAR --- */
+        #sidebar {
+            position: fixed; top: 0; left: -250px; width: 250px; height: 100%;
+            background: #111; z-index: 2000; transition: 0.3s; padding: 20px;
+            border-right: 1px solid #333;
+        }
+        #sidebar.show { left: 0; }
+        .sidebar a { display: block; color: #fff; padding: 15px; text-decoration: none; border-bottom: 1px solid #222; }
+    </style>
+</head>
+<body>
+
+    <div id="vibeOverlay">
+        <div class="vibe-line left-1"></div>
+        <div class="vibe-line left-2"></div>
+        <div class="vibe-line right-1"></div>
+        <div class="vibe-line right-2"></div>
+    </div>
+
+    <div id="sidebar">
+        <h2 style="color:var(--accent-color); margin-bottom:20px;">Menu</h2>
+        <a href="#" data-page="home">🏠 Home</a>
+        <a href="#" data-page="library">📚 My Library</a>
+        <a href="#" onclick="alert('Settings coming soon!')">⚙️ Settings</a>
+    </div>
+
+    <header>
+        <div class="logo">
+            <span id="menuBtn">☰</span> StreamFlow⚡
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search song (e.g. NCS)...">
+        </div>
+        <button class="search-btn" onclick="searchYT()">🔍</button>
+    </header>
+
+    <div id="home" class="page active">
+        <div id="results">
+            <p style="text-align:center; margin-top:50px; color:#666;">
+                Search for a song above to start vibing! 🎧
+            </p>
+        </div>
+    </div>
+
+    <div id="library" class="page" style="display:none; padding-top:80px;">
+        <div id="librarySongs" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:15px; padding:15px;"></div>
+    </div>
+
+    <div id="videoOverlay">
+        <div class="overlay-controls">
+            <button id="closeBtn" class="close-btn">⬇ Minimize</button>
+        </div>
+        <div class="player-wrapper">
+            <div id="player"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
