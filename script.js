@@ -27,9 +27,9 @@ links.forEach(l => {
 
 function setTheme(t) { document.body.className = t; }
 
-// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL HTTPS FIX) ---
+// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL HTTPS) ---
 var tag = document.createElement('script');
-// ✅ YEH HAI OFFICIAL HTTPS LINK (Ye kabhi block nahi hogi):
+// ✅ YEH HAI OFFICIAL HTTPS LINK (Isme 's' hai, ye Secure hai):
 tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
