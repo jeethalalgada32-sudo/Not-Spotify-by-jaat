@@ -5,9 +5,7 @@ const pages = document.querySelectorAll(".page");
 const links = document.querySelectorAll(".sidebar a");
 
 if (menuBtn) {
-    menuBtn.onclick = () => {
-        sidebar.classList.toggle("show");
-    };
+    menuBtn.onclick = () => sidebar.classList.toggle("show");
 }
 
 document.addEventListener('click', (e) => {
@@ -22,12 +20,8 @@ links.forEach(l => {
         const targetId = l.dataset.page;
         const targetPage = document.getElementById(targetId);
         if (targetPage) targetPage.classList.add("active");
-        
         sidebar.classList.remove("show");
-        
-        if (targetId === 'library') {
-            loadGlobalSongs();
-        }
+        if (targetId === 'library') loadGlobalSongs();
     }
 });
 
@@ -35,7 +29,7 @@ function setTheme(t) { document.body.className = t; }
 
 // --- 2. YOUTUBE PLAYER SETUP (OFFICIAL & SECURE) ---
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api"; 
+tag.src = "https://www.youtube.com/iframe_api"; // ✅ Official HTTPS API
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -50,9 +44,8 @@ function onYouTubeIframeAPIReady() {
             'playsinline': 1, 
             'rel': 0, 
             'controls': 1,
-            'enablejsapi': 1,
             'origin': window.location.origin, 
-            'host': 'https://www.youtube.com' 
+            'host': 'https://www.youtube.com' // ✅ Correct Host
         },
         events: {
             'onStateChange': onPlayerStateChange,
@@ -84,9 +77,15 @@ if (closeBtn) {
     }
 }
 
-// --- 4. SEARCH LOGIC (NEW FAST SERVER 🚀) ---
-// Purana wala server busy tha, ye naya wala hai:
-const PIPED_API = "https://pipedapi.drgns.space"; 
+// --- 4. SEARCH LOGIC (AVENGERS TEAM 🛡️) ---
+// Yahan humne 5 alag-alag servers ki list banayi hai.
+const API_LIST = [
+    "https://pipedapi.kavin.rocks",     // 1. Official
+    "https://pipedapi.tokhmi.xyz",      // 2. Backup 1
+    "https://pipedapi.moomoo.me",       // 3. Backup 2
+    "https://pipedapi.syncpundit.io",   // 4. Backup 3
+    "https://api-piped.mha.fi"          // 5. Backup 4
+];
 
 async function searchYT() {
     const query = document.getElementById("searchInput").value.trim();
@@ -97,59 +96,70 @@ async function searchYT() {
 
     resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching... 🎵</p>";
 
-    try {
-        // filter=all rakha hai taaki sab mile
-        const res = await fetch(`${PIPED_API}/search?q=${query}&filter=all`);
-        const data = await res.json();
-        
-        resultsDiv.innerHTML = "";
+    // Loop through API List (Avengers Strategy)
+    let data = null;
+    let success = false;
 
-        if (!data.items || data.items.length === 0) {
-            resultsDiv.innerHTML = "<p style='width:100%; text-align:center;'>No results found (Server Busy). Try again later.</p>";
-            return;
+    for (const api of API_LIST) {
+        try {
+            console.log("Trying Server:", api); // Console me dekhna kaunsa server chala
+            const res = await fetch(`${api}/search?q=${query}&filter=all`);
+            data = await res.json();
+            
+            if (data.items && data.items.length > 0) {
+                success = true;
+                break; // Agar data mil gaya, to loop yahi roko!
+            }
+        } catch (err) {
+            console.log("Server Failed:", api); // Ye server fail hua, agla try karo
         }
-
-        data.items.slice(0, 20).forEach(item => {
-            if (item.type !== 'stream') return;
-            
-            let videoId = item.url.split('v=')[1];
-            if(videoId.includes('&')) videoId = videoId.split('&')[0];
-
-            const div = document.createElement("div");
-            div.className = "card";
-            const thumbUrl = item.thumbnail;
-            
-            div.innerHTML = `
-                <img src="${thumbUrl}" class="song-thumbnail" crossorigin="anonymous">
-                <div class="card-info">
-                    <p>${item.title}</p>
-                </div>
-            `;
-            
-            div.onclick = () => {
-                if (player) {
-                    player.loadVideoById(videoId);
-                    videoOverlay.classList.add('active');
-                    
-                    const tempImg = new Image();
-                    tempImg.crossOrigin = "Anonymous";
-                    tempImg.src = thumbUrl;
-                    tempImg.id = "current-vibe-img";
-                    tempImg.style.display = "none";
-                    
-                    const oldImg = document.getElementById("current-vibe-img");
-                    if(oldImg) oldImg.remove();
-                    document.body.appendChild(tempImg);
-                    
-                    setTimeout(extractColorFromThumb, 1000);
-                }
-            };
-            resultsDiv.appendChild(div);
-        });
-    } catch (err) {
-        console.error(err);
-        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Search Failed. Trying Backup Server...</p>";
     }
+
+    resultsDiv.innerHTML = "";
+
+    if (!success || !data) {
+        resultsDiv.innerHTML = "<p style='width:100%; text-align:center; color:red;'>All Servers Busy. Try again in 1 min! 😓</p>";
+        return;
+    }
+
+    // Result Show Karo
+    data.items.slice(0, 20).forEach(item => {
+        if (item.type !== 'stream') return;
+        
+        let videoId = item.url.split('v=')[1];
+        if(videoId.includes('&')) videoId = videoId.split('&')[0];
+
+        const div = document.createElement("div");
+        div.className = "card";
+        const thumbUrl = item.thumbnail;
+        
+        div.innerHTML = `
+            <img src="${thumbUrl}" class="song-thumbnail" crossorigin="anonymous">
+            <div class="card-info">
+                <p>${item.title}</p>
+            </div>
+        `;
+        
+        div.onclick = () => {
+            if (player) {
+                player.loadVideoById(videoId);
+                videoOverlay.classList.add('active');
+                
+                const tempImg = new Image();
+                tempImg.crossOrigin = "Anonymous";
+                tempImg.src = thumbUrl;
+                tempImg.id = "current-vibe-img";
+                tempImg.style.display = "none";
+                
+                const oldImg = document.getElementById("current-vibe-img");
+                if(oldImg) oldImg.remove();
+                document.body.appendChild(tempImg);
+                
+                setTimeout(extractColorFromThumb, 1000);
+            }
+        };
+        resultsDiv.appendChild(div);
+    });
 }
 
 // --- 5. LIBRARY LOGIC ---
@@ -196,4 +206,4 @@ function extractColorFromThumb() {
 
 const vibeOverlay = document.getElementById('vibeOverlay');
 if(vibeOverlay) vibeOverlay.addEventListener('click', toggleVibeMode);
-                                                         
+        
