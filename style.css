@@ -1,111 +1,78 @@
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  font-family: 'Segoe UI', sans-serif;
-  background: #000;
-  color: #d4af37; /* Gold Text */
-  transition: 0.3s;
+:root {
+    --accent-color: #ffd700;
+    --bg-dark: #0a0a0a;
+    --card-bg: #1a1a1a;
 }
 
-.topbar{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  background: #000;
-  border-bottom: 1px solid #222;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+body {
+    background: var(--bg-dark);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
 }
 
-.topbar button{
-  background: none;
-  border: none;
-  color: #d4af37;
-  font-size: 24px;
-  cursor: pointer;
+/* Glassmorphism Header */
+.glass-header {
+    position: fixed;
+    top: 0; width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.sidebar{
-  position: fixed;
-  top: 50px;
-  left: -220px;
-  width: 200px;
-  height: 100%;
-  background: #111;
-  padding: 15px;
-  transition: .3s;
-  border-right: 1px solid #333;
-  z-index: 99;
-}
-.sidebar.show{ left: 0; }
-
-.sidebar a{
-  display: block;
-  margin: 15px 0;
-  color: #d4af37;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 18px;
+.search-box {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 5px 15px;
+    width: 50%;
 }
 
-.themes button{
-  width: 100%;
-  margin: 8px 0;
-  padding: 10px;
-  border: none;
-  border-radius: 20px;
-  background: #d4af37;
-  color: #000;
-  font-weight: 700;
-  cursor: pointer;
+.search-box input {
+    background: transparent; border: none; color: white;
+    flex: 1; padding: 10px; outline: none;
 }
 
-main{ padding: 20px; padding-bottom: 100px; }
-.page{ display: none; }
-.page.active{ display: block; animation: fadeIn 0.5s; }
-@keyframes fadeIn { from {opacity:0} to {opacity:1} }
-
-.cards{ display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
-
-.card{
-  flex: 1 0 45%;
-  background: #1a1a1a;
-  padding: 10px;
-  border-radius: 12px;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid #333;
-  transition: 0.2s;
+/* Smooth Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    padding: 100px 20px 20px;
 }
-.card:hover{ background: #222; border-color: #d4af37; }
 
-.card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
-.card p { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-input{
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #333;
-  border-radius: 25px;
-  background: #111;
-  color: #fff;
-  outline: none;
-  font-size: 16px;
-}
-input:focus { border-color: #d4af37; }
-
-/* --- PLAYER FIX (Bahut Zaroori) --- */
-#player {
-    width: 100%;
-    height: 300px; /* Ab video dikhega */
-    background: #000;
-    margin-top: 20px;
+.card {
+    background: var(--card-bg);
     border-radius: 15px;
-    border: 1px solid #333;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
 }
 
-.gold { background: #000; color: #d4af37; }
-.light { background: #f5f5f5; color: #000; }
-.light .card { background: #fff; color: #000; border: 1px solid #ddd; }
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.1);
+}
+
+.card img { width: 100%; border-bottom: 2px solid var(--accent-color); }
+
+/* Sidebar Logic */
+.sidebar {
+    position: fixed; left: -280px; width: 250px; height: 100%;
+    background: #111; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 30px;
+}
+.sidebar.show { left: 0; }
+
+/* Vibe Lines Animation */
+@keyframes dance {
+    0% { transform: scaleY(1); opacity: 0.5; }
+    100% { transform: scaleY(1.8); opacity: 1; }
+  }
