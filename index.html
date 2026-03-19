@@ -14,10 +14,6 @@
         <div class="vibe-line left-2"></div>
         <div class="vibe-line right-1"></div>
         <div class="vibe-line right-2"></div>
-        <div class="matrix-container">
-    <canvas id="matrixCanvas"></canvas>
-    <div id="player" style="display:none;"></div> </div>
-        
     </div>
 
     <div id="sidebar" class="sidebar">
@@ -44,9 +40,8 @@
                 <p class="placeholder-text">Search for a song to start vibing! 🎧</p>
             </div>
         </div>
-
         <div id="library" class="page">
-            <h2 style="padding: 10px;">Your Favorites</h2>
+            <h2 style="padding: 20px;">Your Favorites</h2>
             <div id="librarySongs" class="cards"></div>
         </div>
     </main>
@@ -56,11 +51,11 @@
             <button id="closeBtn" class="close-btn">✖ Close</button>
         </div>
         <div class="player-wrapper">
+            <canvas id="matrixCanvas"></canvas>
             <div id="player"></div>
         </div>
     </div>
 
     <script src="script.js"></script>
-    
 </body>
 </html>
