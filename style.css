@@ -2,6 +2,7 @@
     --accent-color: #ffd700;
     --bg-dark: #0a0a0a;
     --card-bg: #1a1a1a;
+    --vibe-color: 255, 215, 0;
 }
 
 body {
@@ -12,11 +13,11 @@ body {
     overflow-x: hidden;
 }
 
-/* Glassmorphism Header */
+/* Glass Header */
 .glass-header {
     position: fixed;
     top: 0; width: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(15px);
     padding: 15px 20px;
     display: flex;
@@ -30,7 +31,7 @@ body {
     display: flex;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 30px;
-    padding: 5px 15px;
+    padding: 2px 15px;
     width: 50%;
 }
 
@@ -39,7 +40,9 @@ body {
     flex: 1; padding: 10px; outline: none;
 }
 
-/* Smooth Cards */
+.search-btn { background: none; border: none; cursor: pointer; font-size: 18px; }
+
+/* Cards Grid */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -49,43 +52,63 @@ body {
 
 .card {
     background: var(--card-bg);
-    border-radius: 15px;
+    border-radius: 12px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+    transition: 0.3s;
+    cursor: pointer;
+    border: 1px solid #333;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-color);
-    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.1);
+.card:hover { transform: scale(1.05); border-color: var(--accent-color); }
+.card img { width: 100%; height: 100px; object-fit: cover; }
+.card-info { padding: 10px; font-size: 12px; text-align: center; }
+
+/* Player & Matrix Overlay */
+.player-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 5000;
+    display: none; flex-direction: column;
 }
 
-.card img { width: 100%; border-bottom: 2px solid var(--accent-color); }
+.player-overlay.active { display: flex; }
 
-/* Sidebar Logic */
-.sidebar {
-    position: fixed; left: -280px; width: 250px; height: 100%;
-    background: #111; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 30px;
-}
-.sidebar.show { left: 0; }
-
-/* Vibe Lines Animation */
-@keyframes dance {
-    0% { transform: scaleY(1); opacity: 0.5; }
-    100% { transform: scaleY(1.8); opacity: 1; }
-  }
-.matrix-container {
-    position: relative;
-    width: 100%;
-    height: 80vh;
-    background: #000;
-    overflow: hidden;
-}
+.player-wrapper { position: relative; width: 100%; height: 100%; }
 
 #matrixCanvas {
-    width: 100%;
-    height: 100%;
-    display: block;
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Allows clicking the player underneath */
 }
+
+#player { width: 100%; height: 100%; }
+
+.close-btn {
+    position: absolute; top: 20px; right: 20px;
+    z-index: 6000; background: rgba(255,255,255,0.2);
+    color: #fff; border: none; padding: 10px 20px;
+    border-radius: 20px; cursor: pointer; backdrop-filter: blur(5px);
+}
+
+/* Vibe Lines */
+.vibe-line {
+    position: fixed; width: 5px; border-radius: 10px;
+    background: rgb(var(--vibe-color));
+    box-shadow: 0 0 15px rgb(var(--vibe-color));
+    animation: dance 0.6s infinite alternate ease-in-out;
+    z-index: 500; display: none;
+}
+.left-1 { left: 5px; height: 30%; top: 35%; }
+.right-1 { right: 5px; height: 30%; top: 35%; }
+
+@keyframes dance { from { transform: scaleY(1); } to { transform: scaleY(1.5); } }
+
+/* Sidebar */
+.sidebar {
+    position: fixed; left: -260px; width: 240px; height: 100%;
+    background: #111; z-index: 2000; transition: 0.4s;
+    padding: 20px; border-right: 1px solid #333;
+}
+.sidebar.show { left: 0; }
+.sidebar a { display: block; color: #ccc; padding: 15px; text-decoration: none; }
+    
