@@ -1,217 +1,103 @@
-// --- 1. SIDEBAR & THEME LOGIC ---
+// --- 1. CONFIG & STATE ---
+const YOUTUBE_API_KEY = "AIzaSyDU1MC8SVdTJxBYtB5nQastJD7h7D5jyzg";
+let player;
+let matrixInterval;
+
+// --- 2. SIDEBAR LOGIC ---
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
-const pages = document.querySelectorAll(".page");
-const links = document.querySelectorAll(".sidebar a");
-
 if (menuBtn) {
     menuBtn.onclick = () => sidebar.classList.toggle("show");
 }
 
-document.addEventListener('click', (e) => {
-    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('show')) {
+document.querySelectorAll(".sidebar a").forEach(link => {
+    link.onclick = () => {
+        const target = link.dataset.page;
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        if(document.getElementById(target)) document.getElementById(target).classList.add("active");
         sidebar.classList.remove("show");
     }
 });
 
-links.forEach(l => {
-    l.onclick = () => {
-        pages.forEach(p => p.classList.remove("active"));
-        const targetId = l.dataset.page;
-        const targetPage = document.getElementById(targetId);
-        if (targetPage) targetPage.classList.add("active");
-        sidebar.classList.remove("show");
-        if (targetId === 'library') loadGlobalSongs();
-    }
-});
-
-function setTheme(t) { document.body.className = t; }
-
-// --- 2. YOUTUBE PLAYER SETUP (OFFICIAL) ---
+// --- 3. YOUTUBE PLAYER ---
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api"; 
+tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-let player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-        height: '100%',
-        width: '100%',
-        videoId: '',
-        playerVars: { 
-            'autoplay': 1, 
-            'playsinline': 1, 
-            'rel': 0, 
-            'controls': 1,
-            'origin': window.location.origin, 
-        },
-        events: {
-            'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
-        }
+        height: '100%', width: '100%', videoId: '',
+        playerVars: { 'autoplay': 1, 'playsinline': 1, 'rel': 0 },
+        events: { 'onStateChange': (e) => { if(e.data == 1) startMatrix(); } }
     });
 }
 
-function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING) {
-        extractColorFromThumb();
+// --- 4. MATRIX EFFECT ---
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+let characters = "01010101STREAMFLOWMATRIXBYSOURAV";
+let fontSize = 15;
+let columns;
+let drops = [];
+
+function initMatrix() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = Math.floor(canvas.width / fontSize);
+    drops = [];
+    for (let i = 0; i < columns; i++) drops[i] = 1;
+}
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0F0"; // Green Matrix
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = characters.charAt(Math.floor(Math.random() * characters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
     }
 }
 
-function onPlayerError(event) {
-    if (event.data === 150 || event.data === 101) {
-        alert("⚠️ Song Restricted (Copyright). Try another!");
-    }
+function startMatrix() {
+    if (matrixInterval) clearInterval(matrixInterval);
+    initMatrix();
+    matrixInterval = setInterval(drawMatrix, 40);
 }
 
-// --- 3. OVERLAY LOGIC ---
-const videoOverlay = document.getElementById('videoOverlay');
-const closeBtn = document.getElementById('closeBtn');
-if (closeBtn) {
-    closeBtn.onclick = () => videoOverlay.classList.remove('active');
-}
-
-// --- 4. SEARCH LOGIC (OFFICIAL API KEY 🔑) ---
-
-// ✅ TERI ORIGINAL API KEY (Ab search goli ki tarah chalega):
-const YOUTUBE_API_KEY = "AIzaSyDU1MC8SVdTJxBYtB5nQastJD7h7D5jyzg";
-
+// --- 5. SEARCH LOGIC ---
 async function searchYT() {
-    const query = document.getElementById("searchInput").value.trim();
-    const resultsDiv = document.getElementById("results");
-
-    if (document.getElementById("searchInput")) document.getElementById("searchInput").blur(); 
+    const query = document.getElementById("searchInput").value;
     if (!query) return;
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "<p>Searching...</p>";
 
-    resultsDiv.innerHTML = "<p style='width:100%; text-align:center; padding:20px;'>Searching YouTube... 🚀</p>";
-    
     try {
-        // OFFICIAL GOOGLE API CALL
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${query}&type=video&key=${YOUTUBE_API_KEY}`;
-        
-        const res = await fetch(url);
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${query}&type=video&key=${YOUTUBE_API_KEY}`);
         const data = await res.json();
-
-        resultsDiv.innerHTML = ""; // Clear loading text
-
-        if (data.error) {
-            console.error("API Error:", data.error);
-            resultsDiv.innerHTML = "<p style='text-align:center; color:red'>API Limit Reached or Error.</p>";
-            return;
-        }
-
-        if (!data.items || data.items.length === 0) {
-            resultsDiv.innerHTML = "<p style='width:100%; text-align:center;'>No results found.</p>";
-            return;
-        }
-
+        resultsDiv.innerHTML = "";
+        
         data.items.forEach(item => {
-            const videoId = item.id.videoId;
-            const title = item.snippet.title;
-            const thumbUrl = item.snippet.thumbnails.medium.url;
-
             const div = document.createElement("div");
             div.className = "card";
-            div.innerHTML = `
-                <img src="${thumbUrl}" class="song-thumbnail" crossorigin="anonymous">
-                <div class="card-info"><p>${title}</p></div>
-            `;
-            
+            div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><div class="card-info">${item.snippet.title}</div>`;
             div.onclick = () => {
-                if (player) {
-                    player.loadVideoById(videoId);
-                    videoOverlay.classList.add('active');
-                    
-                    const tempImg = new Image();
-                    tempImg.crossOrigin = "Anonymous";
-                    tempImg.src = thumbUrl;
-                    tempImg.id = "current-vibe-img";
-                    tempImg.style.display = "none";
-                    
-                    const oldImg = document.getElementById("current-vibe-img");
-                    if(oldImg) oldImg.remove();
-                    document.body.appendChild(tempImg);
-                    
-                    setTimeout(extractColorFromThumb, 1000);
-                }
+                player.loadVideoById(item.id.videoId);
+                document.getElementById("videoOverlay").classList.add("active");
             };
             resultsDiv.appendChild(div);
         });
-
-    } catch (err) {
-        console.error(err);
-        resultsDiv.innerHTML = "<p style='text-align:center; color:red'>Search Error. Check Internet.</p>";
-    }
+    } catch (e) { resultsDiv.innerHTML = "Error!"; }
 }
 
-// --- 5. LIBRARY & VIBE LOGIC ---
-async function loadGlobalSongs() {
-    document.getElementById("librarySongs").innerHTML = "<p style='text-align:center'>Library coming soon...</p>";
-}
+document.getElementById("closeBtn").onclick = () => {
+    document.getElementById("videoOverlay").classList.remove("active");
+    clearInterval(matrixInterval);
+    player.stopVideo();
+};
 
-function toggleVibeMode() {
-    const overlay = document.getElementById('vibeOverlay');
-    if (!overlay) return;
-    overlay.style.display = (overlay.style.display === 'block') ? 'none' : 'block';
-    if(overlay.style.display === 'block') extractColorFromThumb();
-}
-
-function extractColorFromThumb() {
-    const img = document.getElementById('current-vibe-img') || document.querySelector('.card img'); 
-    if (img) {
-        if (typeof ColorThief === 'undefined') return;
-        const colorThief = new ColorThief();
-        const applyColor = () => {
-            try {
-                const color = colorThief.getColor(img);
-                document.documentElement.style.setProperty('--vibe-color', `${color[0]}, ${color[1]}, ${color[2]}`);
-            } catch(e) {}
-        };
-        if (img.complete) applyColor(); else img.addEventListener('load', applyColor);
-    }
-}
-if(document.getElementById('vibeOverlay')) document.getElementById('vibeOverlay').addEventListener('click', toggleVibeMode);
-        
-const canvas = document.getElementById('matrixCanvas');
-const ctx = canvas.getContext('2d', { willReadFrequently: true });
-const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
-
-function startMatrixEffect() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    function drawMatrixFrame() {
-        // Video se frame capture karna
-        ctx.drawImage(player.getIframe(), 0, 0, canvas.width, canvas.height);
-        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = frame.data;
-
-        // Canvas saaf karke Matrix draw karna
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.font = "10px monospace";
-        
-        for (let y = 0; y < canvas.height; y += 10) {
-            for (let x = 0; x < canvas.width; x += 10) {
-                const index = (y * canvas.width + x) * 4;
-                const r = pixels[index];
-                const g = pixels[index + 1];
-                const b = pixels[index + 2];
-                
-                // Brightness calculate karna
-                const brightness = (r + g + b) / 3;
-                
-                if (brightness > 50) { // Sirf chamkilay hisso pe text dikhega
-                    const char = characters[Math.floor(Math.random() * characters.length)];
-                    ctx.fillStyle = `rgba(0, 255, 70, ${brightness / 255})`;
-                    ctx.fillText(char, x, y);
-                }
-            }
-        }
-        requestAnimationFrame(drawMatrixFrame);
-    }
-    drawMatrixFrame();
-    }
-                                       
+window.addEventListener('resize', initMatrix);
