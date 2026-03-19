@@ -173,3 +173,45 @@ function extractColorFromThumb() {
 }
 if(document.getElementById('vibeOverlay')) document.getElementById('vibeOverlay').addEventListener('click', toggleVibeMode);
         
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+
+function startMatrixEffect() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    function drawMatrixFrame() {
+        // Video se frame capture karna
+        ctx.drawImage(player.getIframe(), 0, 0, canvas.width, canvas.height);
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = frame.data;
+
+        // Canvas saaf karke Matrix draw karna
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.font = "10px monospace";
+        
+        for (let y = 0; y < canvas.height; y += 10) {
+            for (let x = 0; x < canvas.width; x += 10) {
+                const index = (y * canvas.width + x) * 4;
+                const r = pixels[index];
+                const g = pixels[index + 1];
+                const b = pixels[index + 2];
+                
+                // Brightness calculate karna
+                const brightness = (r + g + b) / 3;
+                
+                if (brightness > 50) { // Sirf chamkilay hisso pe text dikhega
+                    const char = characters[Math.floor(Math.random() * characters.length)];
+                    ctx.fillStyle = `rgba(0, 255, 70, ${brightness / 255})`;
+                    ctx.fillText(char, x, y);
+                }
+            }
+        }
+        requestAnimationFrame(drawMatrixFrame);
+    }
+    drawMatrixFrame();
+    }
+                                       
