@@ -5,7 +5,6 @@ body {
     font-family: sans-serif;
 }
 
-/* HEADER */
 header {
     display: flex;
     gap: 10px;
@@ -18,7 +17,6 @@ input {
     padding: 8px;
 }
 
-/* GRID */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
@@ -35,7 +33,6 @@ input {
     width: 100%;
 }
 
-/* SIDEBAR */
 .sidebar {
     position: fixed;
     left: -220px;
@@ -51,7 +48,6 @@ input {
     left: 0;
 }
 
-/* PLAYER */
 .overlay {
     position: fixed;
     top: 0;
@@ -71,4 +67,10 @@ input {
 #player {
     width: 90%;
     height: 60%;
+}
+
+.wrapped-box {
+    padding: 20px;
+    background: #111;
+    border-radius: 10px;
 }
