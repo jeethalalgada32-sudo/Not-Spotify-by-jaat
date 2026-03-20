@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Wrapped 🎧</title>
+
+<style>
+body {
+    margin: 0;
+    background: #000;
+    color: white;
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    gap: 15px;
+}
+
+.card {
+    background: #111;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.big {
+    grid-column: span 2;
+    font-size: 18px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px;
+    width: 100%;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎧 Your Wrapped</h1>
+
+<div class="cards" id="wrappedCards"></div>
+
+<button onclick="location.href='index.html'">⬅ Back</button>
+
+<script>
+// GET DATA
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+if (history.length < 3) {
+    document.getElementById("wrappedCards").innerHTML = "<p>Listen more songs!</p>";
+} else {
+
+    let songCount = {};
+    let artistCount = {};
+    let maxRepeat = 0;
+    let repeatSong = "";
+
+    history.forEach(item => {
+        songCount[item.title] = (songCount[item.title] || 0) + 1;
+        artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
+
+        if (songCount[item.title] > maxRepeat) {
+            maxRepeat = songCount[item.title];
+            repeatSong = item.title;
+        }
+    });
+
+    let topSong = Object.keys(songCount).sort((a,b)=>songCount[b]-songCount[a])[0];
+    let topArtist = Object.keys(artistCount).sort((a,b)=>artistCount[b]-artistCount[a])[0];
+
+    let cards = `
+        <div class="card big">
+            <h2>🔥 Top Song</h2>
+            <p>${topSong}</p>
+        </div>
+
+        <div class="card">
+            <h3>🎤 Top Artist</h3>
+            <p>${topArtist}</p>
+        </div>
+
+        <div class="card">
+            <h3>🔁 Most Replayed</h3>
+            <p>${repeatSong} (${maxRepeat}x)</p>
+        </div>
+
+        <div class="card">
+            <h3>📊 Total Plays</h3>
+            <p>${history.length}</p>
+        </div>
+    `;
+
+    document.getElementById("wrappedCards").innerHTML = cards;
+}
+</script>
+
+</body>
+</html>
