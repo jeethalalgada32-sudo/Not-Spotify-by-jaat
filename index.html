@@ -3,39 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFlow Music | AI Matrix 🎵</title>
+    <title>StreamFlow AI | Cyber-Vibe 🎵</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="sidebar" class="sidebar">
-        <h2 class="sidebar-logo">Menu</h2>
-        <a href="#" data-page="home">🏠 Home</a>
-        <a href="#" data-page="library">📚 My Library</a>
-        <a href="#" onclick="alert('Settings coming soon!')">⚙️ Settings</a>
+        <div class="sidebar-header">SF-AI v2.0</div>
+        <a href="#" data-page="home">🏠 Dashboard</a>
+        <a href="#" data-page="library">📚 My Vault</a>
+        <div class="ai-status">Gemini: <span id="status">Online</span></div>
     </div>
 
     <header class="glass-header">
-        <div class="logo"><span id="menuBtn">☰</span> StreamFlow⚡</div>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search your vibe (e.g. Sidhu Moose Wala)...">
-            <button class="search-btn" onclick="searchYT()">🔍</button>
+        <div class="logo" id="menuBtn"><span>☰</span> StreamFlow⚡</div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Talk to Gemini (e.g. Set a dark party vibe)...">
+            <button class="gemini-btn" onclick="askGemini()">🪄 Ask AI</button>
+            <button class="search-icon" onclick="searchYT()">🔍</button>
         </div>
     </header>
 
     <main id="home" class="page active">
         <div id="results" class="cards">
-            <p class="placeholder-text">Search for a song to start the AI Matrix magic! 🎧</p>
+            <div class="welcome-box">
+                <h1>Ready to Vibe, Sourav?</h1> <p>Ask Gemini to set the mood or search your favorite track.</p>
+            </div>
         </div>
     </main>
 
     <div id="videoOverlay" class="player-overlay">
-        <div class="overlay-controls">
-            <button id="matrixToggle" class="mode-btn">AI Matrix: OFF</button>
-            <button id="closeBtn" class="close-btn">✖ Close</button>
+        <div class="overlay-header">
+            <div id="nowPlaying">Streaming Now...</div>
+            <div class="controls">
+                <button id="matrixToggle" class="cyber-btn">Matrix Mode</button>
+                <button id="closeBtn" class="close-btn">✖</button>
+            </div>
         </div>
         <div class="player-wrapper">
             <canvas id="matrixCanvas"></canvas>
