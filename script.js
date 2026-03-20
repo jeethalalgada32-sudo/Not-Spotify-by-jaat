@@ -1,13 +1,11 @@
-// --- 1. CONFIG & API KEYS ---
+// --- CONFIG ---
 const YOUTUBE_API_KEY = "AIzaSyDU1MC8SVdTJxBYtB5nQastJD7h7D5jyzg";
 const GEMINI_API_KEY = "AIzaSyC0KhWuivkNagpPhVhqqPKZJZZvnOc-DDI";
 
 let player;
-let isMatrixOn = false;
 let listenHistory = JSON.parse(localStorage.getItem('streamflow_history')) || [];
-window.matrixColor = "#00f2ff";
 
-// --- 2. YOUTUBE PLAYER SETUP ---
+// --- YOUTUBE PLAYER ---
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
@@ -16,58 +14,44 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%',
         width: '100%',
-        videoId: '',
-        playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1 }
+        videoId: ''
     });
 }
 
-// --- 3. GEMINI SMART SEARCH ---
+// --- GEMINI SEARCH ---
 async function askGemini() {
     const input = document.getElementById("searchInput").value.trim();
     if (!input) return;
 
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "<div class='welcome-box'><h2>Designing your vibe... 🪄</h2></div>";
-
     try {
-        const prompt = `User vibe: "${input}". Suggest best YouTube search (song + artist) and neon color.
-Return ONLY JSON:
-{"search":"song artist","color":"#hexcode"}`;
-
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Suggest song for: ${input}` }] }]
+            })
         });
 
         const data = await res.json();
-        let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        text = text.replace(/```json|```/g, "").trim();
-        let ai = JSON.parse(text);
-
-        document.documentElement.style.setProperty('--accent', ai.color);
-        window.matrixColor = ai.color;
-
-        document.getElementById("searchInput").value = ai.search;
+        document.getElementById("searchInput").value = text || input;
         searchYT();
 
-    } catch (e) {
-        console.error(e);
+    } catch {
         searchYT();
     }
 }
 
-// --- 4. YOUTUBE SEARCH ---
+// --- YOUTUBE SEARCH ---
 async function searchYT() {
     const q = document.getElementById("searchInput").value;
-    if (!q) return;
-
     const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "<p style='text-align:center; padding:50px;'>Loading songs... 🚀</p>";
+
+    resultsDiv.innerHTML = "Loading...";
 
     try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q}&type=video&key=${YOUTUBE_API_KEY}`);
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${q}&type=video&key=${YOUTUBE_API_KEY}`);
         const data = await res.json();
 
         resultsDiv.innerHTML = "";
@@ -78,19 +62,16 @@ async function searchYT() {
 
             div.innerHTML = `
                 <img src="${item.snippet.thumbnails.medium.url}">
-                <div style="padding:10px; font-size:12px;">${item.snippet.title}</div>
+                <p>${item.snippet.title}</p>
             `;
 
             div.onclick = () => {
                 player.loadVideoById(item.id.videoId);
-                document.getElementById("player").classList.add("visible");
                 document.getElementById("videoOverlay").classList.add("active");
 
-                // 🔥 SAVE FULL DATA
                 listenHistory.push({
                     title: item.snippet.title,
-                    channel: item.snippet.channelTitle,
-                    time: Date.now()
+                    artist: item.snippet.channelTitle
                 });
 
                 localStorage.setItem('streamflow_history', JSON.stringify(listenHistory));
@@ -99,96 +80,51 @@ async function searchYT() {
             resultsDiv.appendChild(div);
         });
 
-    } catch (e) {
-        resultsDiv.innerHTML = "<p style='color:red;'>YouTube API limit reached!</p>";
+    } catch {
+        resultsDiv.innerHTML = "Error loading songs";
     }
 }
 
-// --- 5. SPOTIFY WRAPPED SYSTEM ---
+// --- RECAP ---
+function generateRecap() {
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = `
+    <div class='welcome-box'>
+        <h2>🔥 Your Recap</h2>
+        <p>You love music and explore different vibes 🎧</p>
+    </div>`;
+}
+
+// --- WRAPPED ---
 function generateWrapped() {
     const history = JSON.parse(localStorage.getItem('streamflow_history')) || [];
 
     if (history.length < 3) {
-        alert("Listen to more songs to unlock Wrapped!");
+        alert("Listen more songs!");
         return;
     }
-
-    const resultsDiv = document.getElementById("results");
 
     const songCount = {};
     const artistCount = {};
 
     history.forEach(item => {
         songCount[item.title] = (songCount[item.title] || 0) + 1;
-        artistCount[item.channel] = (artistCount[item.channel] || 0) + 1;
+        artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
     });
 
     const topSong = Object.keys(songCount).sort((a,b)=>songCount[b]-songCount[a])[0];
     const topArtist = Object.keys(artistCount).sort((a,b)=>artistCount[b]-artistCount[a])[0];
-    const totalPlays = history.length;
-    const repeatSong = Object.keys(songCount).find(s=>songCount[s]>2) || "No heavy repeat";
 
-    let personality = "";
-    if (totalPlays > 20) personality = "🎧 Hardcore Listener";
-    else if (totalPlays > 10) personality = "🔥 Vibe Explorer";
-    else personality = "😎 Casual Listener";
-
-    resultsDiv.innerHTML = `
-    <div class='welcome-box' style='border:2px solid var(--accent);'>
-        <h1 style='color:var(--accent)'>🎧 Your Wrapped</h1>
-
-        <p><b>Top Song:</b><br>${topSong}</p>
-        <p><b>Top Artist:</b><br>${topArtist}</p>
-        <p><b>Most Replayed:</b><br>${repeatSong}</p>
-        <p><b>Total Plays:</b> ${totalPlays}</p>
-
-        <hr>
-
-        <p><b>Your Vibe:</b><br>${personality}</p>
-
-        <button onclick="location.reload()">Back</button>
+    document.getElementById("results").innerHTML = `
+    <div class='welcome-box'>
+        <h1>🎧 Your Wrapped</h1>
+        <p><b>Top Song:</b> ${topSong}</p>
+        <p><b>Top Artist:</b> ${topArtist}</p>
+        <p><b>Total Plays:</b> ${history.length}</p>
     </div>`;
 }
 
-// --- 6. MATRIX EFFECT ---
-function startMatrixEffect() {
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    function draw() {
-        if (!isMatrixOn) return;
-
-        ctx.fillStyle = "rgba(0,0,0,0.1)";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-
-        ctx.fillStyle = window.matrixColor;
-        for (let i=0;i<40;i++){
-            ctx.fillText(Math.floor(Math.random()*10),
-            Math.random()*canvas.width,
-            Math.random()*canvas.height);
-        }
-
-        requestAnimationFrame(draw);
-    }
-    draw();
-}
-
-// --- 7. UI ---
-document.getElementById("menuBtn").onclick = () =>
-    document.getElementById("sidebar").classList.toggle("show");
-
-document.getElementById("matrixToggle").onclick = function () {
-    const canvas = document.getElementById("matrixCanvas");
-    isMatrixOn = !isMatrixOn;
-    canvas.style.display = isMatrixOn ? "block" : "none";
-    if (isMatrixOn) startMatrixEffect();
-};
-
+// --- CLOSE PLAYER ---
 document.getElementById("closeBtn").onclick = () => {
     document.getElementById("videoOverlay").classList.remove("active");
-    isMatrixOn = false;
-    player.stopVideo();
 };
