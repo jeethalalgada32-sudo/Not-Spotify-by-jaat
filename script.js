@@ -103,7 +103,11 @@ async function searchYT() {
                 document.getElementById("player").classList.add("visible");
                 document.getElementById("videoOverlay").classList.add("active");
 
-                listenHistory.push(item.snippet.title);
+                listenHistory.push({
+    title: item.snippet.title,
+    channel: item.snippet.channelTitle,
+    time: Date.now()
+});
                 localStorage.setItem('streamflow_history', JSON.stringify(listenHistory));
             };
 
