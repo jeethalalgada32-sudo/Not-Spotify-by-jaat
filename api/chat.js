@@ -1,25 +1,27 @@
 export default async function handler(req, res) {
     if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method not allowed" });
+        return res.status(405).json({ error: "Only POST allowed" });
     }
 
     try {
         const { message, history } = req.body;
 
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
         const prompt = `
 User message: ${message}
 
-User listening history:
+Recent songs:
 ${history?.map(h => h.title).join(", ")}
 
-Analyze user's music taste and reply like a smart AI assistant.
-Keep it short and cool.
+Analyze:
+- user music taste
+- suggest songs
+- describe vibe
+
+Keep it short and smart.
 `;
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
