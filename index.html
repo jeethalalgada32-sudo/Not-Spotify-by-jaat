@@ -3,51 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFlow Music 🎵</title>
+    <title>StreamFlow Music | AI Matrix 🎵</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="vibeOverlay">
-        <div class="vibe-line left-1"></div>
-        <div class="vibe-line left-2"></div>
-        <div class="vibe-line right-1"></div>
-        <div class="vibe-line right-2"></div>
-    </div>
-
     <div id="sidebar" class="sidebar">
         <h2 class="sidebar-logo">Menu</h2>
         <a href="#" data-page="home">🏠 Home</a>
         <a href="#" data-page="library">📚 My Library</a>
-        <a href="#" onclick="alert('Settings coming soon!')">⚙️ Settings</a>
     </div>
-    <div id="overlay-bg"></div>
 
     <header class="glass-header">
-        <div class="logo">
-            <span id="menuBtn">☰</span> StreamFlow⚡
-        </div>
+        <div class="logo"><span id="menuBtn">☰</span> StreamFlow⚡</div>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search your vibe...">
             <button class="search-btn" onclick="searchYT()">🔍</button>
         </div>
     </header>
 
-    <main>
-        <div id="home" class="page active">
-            <div id="results" class="cards">
-                <p class="placeholder-text">Search for a song to start vibing! 🎧</p>
-            </div>
-        </div>
-        <div id="library" class="page">
-            <h2 style="padding: 20px;">Your Favorites</h2>
-            <div id="librarySongs" class="cards"></div>
+    <main id="home" class="page active">
+        <div id="results" class="cards">
+            <p class="placeholder-text">Search and play to see the AI magic! 🎧</p>
         </div>
     </main>
 
     <div id="videoOverlay" class="player-overlay">
         <div class="overlay-controls">
+            <button id="matrixToggle" class="mode-btn">AI Matrix: OFF</button>
             <button id="closeBtn" class="close-btn">✖ Close</button>
         </div>
         <div class="player-wrapper">
