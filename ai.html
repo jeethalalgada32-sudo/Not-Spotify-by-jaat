@@ -1,0 +1,30 @@
+async function sendMsg() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMsg(text, "user");
+    input.value = "";
+
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+
+    try {
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: text,
+                history: history.slice(-10)
+            })
+        });
+
+        const data = await res.json();
+
+        addMsg(data.reply, "bot");
+
+    } catch (e) {
+        addMsg("Server error 😢", "bot");
+    }
+}
