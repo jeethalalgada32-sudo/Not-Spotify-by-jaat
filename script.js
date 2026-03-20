@@ -8,7 +8,7 @@ let tag = document.createElement("script");
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
 
-// Player Ready
+// Player
 function onYouTubeIframeAPIReady() {
     player = new YT.Player("player", {
         height: "100%",
@@ -48,7 +48,8 @@ async function searchYT() {
 
             history.push({
                 title: item.snippet.title,
-                artist: item.snippet.channelTitle
+                artist: item.snippet.channelTitle,
+                time: Date.now()
             });
 
             localStorage.setItem("history", JSON.stringify(history));
@@ -58,24 +59,62 @@ async function searchYT() {
     });
 }
 
-// WRAPPED
+// 🔥 SMART WRAPPED
 function generateWrapped() {
-    if (history.length < 2) {
+    if (history.length < 5) {
         alert("Listen more songs!");
         return;
     }
 
     let songCount = {};
-    history.forEach(h => {
-        songCount[h.title] = (songCount[h.title] || 0) + 1;
+    let artistCount = {};
+    let repeatSong = "";
+    let maxRepeat = 0;
+
+    let night = 0, day = 0;
+
+    history.forEach(item => {
+        songCount[item.title] = (songCount[item.title] || 0) + 1;
+        artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
+
+        if (songCount[item.title] > maxRepeat) {
+            maxRepeat = songCount[item.title];
+            repeatSong = item.title;
+        }
+
+        let hour = new Date(item.time).getHours();
+        if (hour >= 22 || hour < 5) night++;
+        else day++;
     });
 
     let topSong = Object.keys(songCount).sort((a,b)=>songCount[b]-songCount[a])[0];
+    let topArtist = Object.keys(artistCount).sort((a,b)=>artistCount[b]-artistCount[a])[0];
+
+    let personality = "";
+
+    if (maxRepeat >= 4) {
+        personality = "🔁 Loop Lover – you replay your favorite song again and again.";
+    } else if (night > day) {
+        personality = "🌙 Night Listener – late night music is your thing.";
+    } else if (Object.keys(songCount).length > history.length / 2) {
+        personality = "🔥 Explorer – you love discovering new songs.";
+    } else {
+        personality = "🎧 Balanced Listener.";
+    }
 
     document.getElementById("results").innerHTML = `
-    <h1>🎧 Your Wrapped</h1>
-    <p>Top Song: ${topSong}</p>
-    <p>Total Plays: ${history.length}</p>
+    <div class="wrapped-box">
+        <h1>🎧 Your Wrapped</h1>
+
+        <p><b>🔥 Top Song:</b> ${topSong}</p>
+        <p><b>🎤 Top Artist:</b> ${topArtist}</p>
+        <p><b>🔁 Most Replayed:</b> ${repeatSong} (${maxRepeat}x)</p>
+        <p><b>📊 Total Plays:</b> ${history.length}</p>
+
+        <hr>
+
+        <p><b>🧠 Personality:</b> ${personality}</p>
+    </div>
     `;
 }
 
