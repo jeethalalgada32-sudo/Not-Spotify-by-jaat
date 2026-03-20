@@ -33,7 +33,7 @@ async function askGemini() {
     if (!input) return;
 
     const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "<div class='welcome-box'><h2>Gemini is designing your vibe... 🪄</h2></div>";
+    resultsDiv.innerHTML = "<div class='welcome-box'><h2>Designing your vibe... 🪄</h2></div>";
 
     try {
         const prompt = `User vibe: "${input}". Suggest best YouTube search (song + artist) and neon color.
@@ -50,21 +50,15 @@ Return ONLY valid JSON:
         });
 
         const data = await res.json();
-        console.log("Gemini raw:", data);
+        console.log("Gemini:", data);
 
         let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-        if (!text) throw new Error("Empty Gemini response");
+        if (!text) throw new Error("Empty response");
 
         text = text.replace(/```json|```/g, "").trim();
 
-        let aiResponse;
-        try {
-            aiResponse = JSON.parse(text);
-        } catch {
-            console.error("JSON failed:", text);
-            throw new Error("Invalid JSON");
-        }
+        let aiResponse = JSON.parse(text);
 
         document.documentElement.style.setProperty('--accent', aiResponse.color);
         window.matrixColor = aiResponse.color;
@@ -74,7 +68,7 @@ Return ONLY valid JSON:
         searchYT();
 
     } catch (e) {
-        console.error("Gemini Error:", e);
+        console.error(e);
         searchYT(); // fallback
     }
 }
@@ -85,7 +79,7 @@ async function searchYT() {
     if (!q) return;
 
     const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "<p style='text-align:center; padding:50px;'>Summoning tracks... 🚀</p>";
+    resultsDiv.innerHTML = "<p style='text-align:center; padding:50px;'>Loading songs... 🚀</p>";
 
     try {
         const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q}&type=video&key=${YOUTUBE_API_KEY}`);
@@ -121,28 +115,27 @@ async function searchYT() {
     }
 }
 
-// --- 5. GEMINI RECAP ---
+// --- 5. GEMINI RECAP (FIXED + FALLBACK) ---
 async function generateRecap() {
     document.getElementById("sidebar").classList.remove("show");
 
     const history = JSON.parse(localStorage.getItem('streamflow_history')) || [];
 
     if (history.length < 2) {
-        alert("Bhai 2-3 gaane sun pehle 😤");
+        alert("Listen to at least 2 songs first!");
         return;
     }
 
     const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "<div class='welcome-box'><h2>🔥 Crafting your Vibe Report...</h2></div>";
+    resultsDiv.innerHTML = "<div class='welcome-box'><h2>🔥 Creating your vibe report...</h2></div>";
 
     const prompt = `
 Songs: ${history.slice(-10).join(", ")}
 
-Create a savage Hinglish recap for Sourav:
+Create a cool English recap:
 - Music taste
 - Personality
 - Give nickname
-
 Max 2 lines.
 `;
 
@@ -156,11 +149,14 @@ Max 2 lines.
         });
 
         const data = await res.json();
-        console.log("Recap raw:", data);
+        console.log("Recap:", data);
 
-        const recapText =
-            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "Bhai Gemini ne reply nahi diya 😅";
+        let recapText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        // 🔥 fallback (always show something)
+        if (!recapText) {
+            recapText = "You're a music explorer 🎧 — mixing chill, hype, and attitude like a true vibe master.";
+        }
 
         resultsDiv.innerHTML = `
             <div class='welcome-box' style='border: 2px solid var(--accent);'>
@@ -182,7 +178,13 @@ Max 2 lines.
 
     } catch (e) {
         console.error(e);
-        resultsDiv.innerHTML = "<div class='welcome-box'><h2>Gemini busy hai 😅</h2></div>";
+
+        resultsDiv.innerHTML = `
+            <div class='welcome-box'>
+                <h2>⚠️ Error</h2>
+                <p>Gemini is not responding. Try again later.</p>
+            </div>
+        `;
     }
 }
 
