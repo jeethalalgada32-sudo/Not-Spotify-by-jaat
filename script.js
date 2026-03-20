@@ -239,3 +239,68 @@ document.getElementById("closeBtn").onclick = () => {
     isMatrixOn = false;
     player.stopVideo();
 };
+
+function generateWrapped() {
+    const history = JSON.parse(localStorage.getItem('streamflow_history')) || [];
+
+    if (history.length < 3) {
+        alert("Listen to more songs to unlock your Wrapped!");
+        return;
+    }
+
+    const resultsDiv = document.getElementById("results");
+
+    // --- Stats Calculation ---
+    const songCount = {};
+    const artistCount = {};
+
+    history.forEach(item => {
+        songCount[item.title] = (songCount[item.title] || 0) + 1;
+        artistCount[item.channel] = (artistCount[item.channel] || 0) + 1;
+    });
+
+    const topSong = Object.keys(songCount).sort((a,b) => songCount[b] - songCount[a])[0];
+    const topArtist = Object.keys(artistCount).sort((a,b) => artistCount[b] - artistCount[a])[0];
+    const totalPlays = history.length;
+
+    const repeatSong = Object.keys(songCount).find(song => songCount[song] > 2) || "No heavy repeat yet";
+
+    // --- Personality Logic ---
+    let personality = "";
+
+    if (totalPlays > 20) {
+        personality = "🎧 Hardcore Listener – music is your daily fuel.";
+    } else if (totalPlays > 10) {
+        personality = "🔥 Vibe Explorer – you love switching moods.";
+    } else {
+        personality = "😎 Casual Listener – chill and selective.";
+    }
+
+    // --- UI Output ---
+    resultsDiv.innerHTML = `
+        <div class='welcome-box' style='border:2px solid var(--accent); text-align:left;'>
+            <h1 style="color:var(--accent); text-align:center;">🎧 Your Wrapped</h1>
+
+            <p><b>🎵 Top Song:</b><br>${topSong}</p>
+            <p><b>🎤 Top Artist:</b><br>${topArtist}</p>
+            <p><b>🔁 Most Replayed:</b><br>${repeatSong}</p>
+            <p><b>📊 Total Plays:</b> ${totalPlays}</p>
+
+            <hr style="margin:15px 0; border-color:#333;">
+
+            <p><b>🧠 Your Vibe:</b><br>${personality}</p>
+
+            <button onclick="location.reload()" style="
+                margin-top:20px;
+                padding:10px 20px;
+                border-radius:20px;
+                border:none;
+                background:var(--accent);
+                color:#000;
+                font-weight:bold;
+                cursor:pointer;">
+                Back
+            </button>
+        </div>
+    `;
+}
