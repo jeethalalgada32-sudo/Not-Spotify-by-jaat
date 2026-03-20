@@ -1,58 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFlow AI | Sourav's Cyber-Vibe 🎵</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamFlow AI ⚡</title>
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">SF-AI v2.0</div>
-        <a href="#" data-page="home">🏠 Dashboard</a>
-        <a href="#" onclick="generateRecap()">🔥 My Recap</a>
-        <a href="#" data-page="library">📚 My Vault</a>
-        <a href="#" onclick="generateWrapped(); closeSidebar()">🎧 My Wrapped</a>
-        <div class="ai-status">Gemini: <span id="status">Online</span></div>
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">SF-AI v2.0</div>
+
+    <a href="#" onclick="closeSidebar()">🏠 Dashboard</a>
+    <a href="#" onclick="generateRecap(); closeSidebar()">🔥 My Recap</a>
+    <a href="#" onclick="generateWrapped(); closeSidebar()">🎧 My Wrapped</a>
+
+    <div class="ai-status">AI: Online</div>
+</div>
+
+<!-- HEADER -->
+<header class="glass-header">
+    <div class="logo" id="menuBtn">☰ StreamFlow⚡</div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Describe your vibe...">
+        <button onclick="askGemini()">AI</button>
+        <button onclick="searchYT()">🔍</button>
     </div>
+</header>
 
-    <header class="glass-header">
-        <div class="logo" id="menuBtn"><span>☰</span> StreamFlow⚡</div>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Talk to Gemini (e.g. Set a party vibe)...">
-            <button class="gemini-btn" onclick="askGemini()">AI</button>
-            <button class="search-icon" onclick="searchYT()">🔍</button>
-        </div>
-    </header>
-
-    <main id="home" class="page active">
-        <div id="results" class="cards">
-            <div class="welcome-box">
-                <h1>Ready to Vibe, Sourav?</h1>
-                <p>Ask Gemini to set the mood or search your favorite track.</p>
-                <p style="font-size: 12px; color: #555; margin-top: 10px;">Jaat Edition</p>
-            </div>
-        </div>
-    </main>
-
-    <div id="videoOverlay" class="player-overlay">
-        <div class="overlay-header">
-            <div id="nowPlaying">Streaming Now...</div>
-            <div class="controls">
-                <button id="matrixToggle" class="cyber-btn">Matrix Mode</button>
-                <button id="closeBtn" class="close-btn">✖</button>
-            </div>
-        </div>
-        <div class="player-wrapper">
-            <canvas id="matrixCanvas"></canvas>
-            <div id="player"></div>
+<!-- MAIN -->
+<main>
+    <div id="results" class="cards">
+        <div class="welcome-box">
+            <h1>Ready to Vibe?</h1>
+            <p>Search or use AI to explore music 🎧</p>
+            <p style="font-size:12px; opacity:0.6;">Powered by StreamFlow AI ⚡</p>
         </div>
     </div>
+</main>
 
-    <script src="script.js"></script>
+<!-- PLAYER -->
+<div id="videoOverlay" class="player-overlay">
+    <button id="closeBtn">✖</button>
+    <div id="player"></div>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+// 🔥 SIDEBAR TOGGLE FIX
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.onclick = () => {
+    sidebar.classList.toggle("show");
+};
+
+function closeSidebar() {
+    sidebar.classList.remove("show");
+}
+
+// click outside = close
+document.addEventListener("click", function(e) {
+    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove("show");
+    }
+});
+</script>
+
 </body>
-</html>
-
+    </html>
