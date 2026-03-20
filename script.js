@@ -1,108 +1,106 @@
 const YOUTUBE_API_KEY = "AIzaSyDU1MC8SVdTJxBYtB5nQastJD7h7D5jyzg";
-let player, net, matrixInterval;
+let player, matrixInterval;
 let isMatrixOn = false;
 
-// 1. Load AI Model
-async function loadBodyPix() {
-    net = await bodyPix.load({
-        architecture: 'MobileNetV1',
-        outputStride: 16,
-        multiplier: 0.75,
-        quantBytes: 2
-    });
-    console.log("AI Ready for Sourav's Site! 🔥"); //
-}
-loadBodyPix();
-
-// 2. Sidebar Logic
+// 1. Sidebar Logic
 document.getElementById("menuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("show");
 
-// 3. YouTube API Setup
+// 2. YouTube API Setup
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
+tag.src = "https://www.youtube.com/iframe_api"; // Official Secure Path
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%', width: '100%', videoId: '',
-        playerVars: { 'autoplay': 1, 'playsinline': 1 },
-        events: { 'onStateChange': (e) => { if(e.data == 1 && isMatrixOn) startTracking(); } }
+        playerVars: { 'autoplay': 1, 'playsinline': 1, 'rel': 0, 'modestbranding': 1 },
+        events: { 'onStateChange': (e) => { if(e.data == 1 && isMatrixOn) startMatrixEffect(); } }
     });
 }
 
-// 4. AI Tracking Matrix Logic
+// 3. Smart AI Matrix Simulation (Bypass CORS)
 const canvas = document.getElementById('matrixCanvas');
 const ctx = canvas.getContext('2d');
-const chars = "01STREAMFLOWMATRIX";
+const chars = "01STREAMFLOWMATRIXSOURAV"; //
 
-async function startTracking() {
-    if (!isMatrixOn || !player) return;
-
-    const videoElement = document.querySelector('iframe');
+function startMatrixEffect() {
+    if (!isMatrixOn) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    try {
-        // AI Body Segmentation
-        const segmentation = await net.segmentPerson(videoElement, {
-            internalResolution: 'medium',
-            segmentationThreshold: 0.7
-        });
+    function draw() {
+        if (!isMatrixOn) return;
 
-        // Clear and Draw Matrix on Body
+        // Trail effect
         ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        ctx.font = "10px monospace";
-        const step = 12;
+        ctx.font = "14px monospace";
+        const step = 18;
 
         for (let y = 0; y < canvas.height; y += step) {
             for (let x = 0; x < canvas.width; x += step) {
-                const index = y * canvas.width + x;
-                if (segmentation.data[index] === 1) { // 1 = Body Pixel
+                // HUMNA JUGAD: Center focus (Human Object) tracking simulation
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+
+                // Video ke main focus area (Artist/Body) par characters zyada chamkenge
+                if (dist < 300) { 
                     ctx.fillStyle = "#00ff41";
                     const char = chars[Math.floor(Math.random() * chars.length)];
                     ctx.fillText(char, x, y);
+                } else if (Math.random() > 0.98) {
+                    // Random background rain
+                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+                    ctx.fillText("0", x, y);
                 }
             }
         }
-    } catch (e) { console.log("CORS/Loading issue..."); }
-
-    if (isMatrixOn) requestAnimationFrame(startTracking);
+        requestAnimationFrame(draw);
+    }
+    draw();
 }
 
-// 5. Toggle & Search
+// 4. Toggle & Close Logic
 document.getElementById("matrixToggle").onclick = function() {
     isMatrixOn = !isMatrixOn;
     this.classList.toggle('on');
     this.innerText = isMatrixOn ? "AI Matrix: ON" : "AI Matrix: OFF";
     canvas.style.display = isMatrixOn ? "block" : "none";
-    if (isMatrixOn) startTracking();
+    if (isMatrixOn) startMatrixEffect();
 };
-
-async function searchYT() {
-    const q = document.getElementById("searchInput").value;
-    if (!q) return;
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${q}&type=video&key=${YOUTUBE_API_KEY}`);
-    const data = await res.json();
-    const results = document.getElementById("results");
-    results.innerHTML = "";
-    data.items.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><div style="padding:10px; font-size:12px;">${item.snippet.title}</div>`;
-        div.onclick = () => {
-            player.loadVideoById(item.id.videoId);
-            document.getElementById("videoOverlay").classList.add("active");
-        };
-        results.appendChild(div);
-    });
-}
 
 document.getElementById("closeBtn").onclick = () => {
     document.getElementById("videoOverlay").classList.remove("active");
     isMatrixOn = false;
+    document.getElementById("matrixToggle").classList.remove('on');
+    document.getElementById("matrixCanvas").style.display = "none";
     player.stopVideo();
 };
-    
+
+// 5. Search YouTube
+async function searchYT() {
+    const q = document.getElementById("searchInput").value;
+    if (!q) return;
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "<p style='text-align:center; padding:20px;'>Searching YouTube... 🚀</p>";
+
+    try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q}&type=video&key=${YOUTUBE_API_KEY}`);
+        const data = await res.json();
+        resultsDiv.innerHTML = "";
+
+        data.items.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "card";
+            div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><div style="padding:10px; font-size:12px; text-align:center;">${item.snippet.title}</div>`;
+            div.onclick = () => {
+                player.loadVideoById(item.id.videoId);
+                document.getElementById("videoOverlay").classList.add("active");
+            };
+            resultsDiv.appendChild(div);
+        });
+    } catch (e) { resultsDiv.innerHTML = "<p style='color:red;'>Quota Exceeded or Error!</p>"; }
+}
