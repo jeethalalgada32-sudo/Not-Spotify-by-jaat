@@ -6,18 +6,17 @@ export default async function handler(req, res) {
     try {
         const { message, history } = req.body;
 
+        if (!process.env.GEMINI_API_KEY) {
+            return res.status(500).json({ reply: "API key missing 😢" });
+        }
+
         const prompt = `
 User message: ${message}
 
 Recent songs:
 ${history?.map(h => h.title).join(", ")}
 
-Analyze:
-- user music taste
-- suggest songs
-- describe vibe
-
-Keep it short and smart.
+Analyze user music taste and reply in a cool Hinglish style.
 `;
 
         const response = await fetch(
@@ -33,13 +32,20 @@ Keep it short and smart.
 
         const data = await response.json();
 
-        const reply =
-            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "No response";
+        console.log("Gemini RAW:", JSON.stringify(data));
+
+        let reply = "No response 😢";
+
+        if (data.candidates && data.candidates.length > 0) {
+            reply = data.candidates[0]?.content?.parts?.[0]?.text || reply;
+        } else if (data.error) {
+            reply = "Gemini Error: " + data.error.message;
+        }
 
         res.status(200).json({ reply });
 
     } catch (err) {
-        res.status(500).json({ error: "Server error" });
+        console.error(err);
+        res.status(500).json({ reply: "Server crash 💥" });
     }
 }
