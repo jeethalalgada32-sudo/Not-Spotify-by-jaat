@@ -11,39 +11,23 @@
 
 <!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
-    <div class="sidebar-header">SF-AI v2.0</div>
-
-    <a href="#" onclick="closeSidebar()">🏠 Dashboard</a>
-    <a href="#" onclick="generateRecap(); closeSidebar()">🔥 My Recap</a>
+    <h2>StreamFlow</h2>
+    <a href="#" onclick="closeSidebar()">🏠 Home</a>
     <a href="#" onclick="generateWrapped(); closeSidebar()">🎧 My Wrapped</a>
-
-    <div class="ai-status">AI: Online</div>
 </div>
 
 <!-- HEADER -->
-<header class="glass-header">
-    <div class="logo" id="menuBtn">☰ StreamFlow⚡</div>
-
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Describe your vibe...">
-        <button onclick="askGemini()">AI</button>
-        <button onclick="searchYT()">🔍</button>
-    </div>
+<header>
+    <button id="menuBtn">☰</button>
+    <input id="searchInput" placeholder="Search music...">
+    <button onclick="searchYT()">Search</button>
 </header>
 
 <!-- MAIN -->
-<main>
-    <div id="results" class="cards">
-        <div class="welcome-box">
-            <h1>Ready to Vibe?</h1>
-            <p>Search or use AI to explore music 🎧</p>
-            <p style="font-size:12px; opacity:0.6;">Powered by StreamFlow AI ⚡</p>
-        </div>
-    </div>
-</main>
+<div id="results" class="grid"></div>
 
 <!-- PLAYER -->
-<div id="videoOverlay" class="player-overlay">
+<div id="videoOverlay" class="overlay">
     <button id="closeBtn">✖</button>
     <div id="player"></div>
 </div>
@@ -51,7 +35,6 @@
 <script src="script.js"></script>
 
 <script>
-// SIDEBAR CONTROL
 const sidebar = document.getElementById("sidebar");
 const menuBtn = document.getElementById("menuBtn");
 
@@ -61,7 +44,7 @@ function closeSidebar() {
     sidebar.classList.remove("show");
 }
 
-document.addEventListener("click", function(e) {
+document.addEventListener("click", (e)=>{
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
         sidebar.classList.remove("show");
     }
