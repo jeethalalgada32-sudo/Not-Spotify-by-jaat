@@ -14,7 +14,16 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '100%',
         width: '100%',
-        videoId: ''
+        videoId: '',
+        playerVars: {
+            autoplay: 1,
+            playsinline: 1
+        },
+        events: {
+            onReady: () => {
+                console.log("Player Ready ✅");
+            }
+        }
     });
 }
 
