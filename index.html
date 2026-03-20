@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFlow AI ⚡</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamFlow AI ⚡</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- SIDEBAR -->
@@ -13,27 +14,42 @@
     <h2>StreamFlow</h2>
     <a href="#" onclick="closeSidebar()">🏠 Home</a>
     <a href="#" onclick="generateWrapped(); closeSidebar()">🎧 My Wrapped</a>
-    <a href="#" onclick="clearHistory(); closeSidebar()">🗑️ Clear History</a>
 </div>
 
 <!-- HEADER -->
 <header>
     <button id="menuBtn">☰</button>
-    <input id="searchInput" placeholder="Search songs, artists..." type="text">
+    <input id="searchInput" placeholder="Search music...">
     <button onclick="searchYT()">Search</button>
 </header>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 <div id="results" class="grid"></div>
 
-<!-- VIDEO PLAYER OVERLAY -->
+<!-- PLAYER -->
 <div id="videoOverlay" class="overlay">
     <button id="closeBtn">✖</button>
     <div id="player"></div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script src="script.js"></script>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.onclick = () => sidebar.classList.toggle("show");
+
+function closeSidebar() {
+    sidebar.classList.remove("show");
+}
+
+document.addEventListener("click", (e)=>{
+    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove("show");
+    }
+});
+</script>
 
 </body>
 </html>
