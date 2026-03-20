@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StreamFlow AI ⚡</title>
-
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -52,19 +51,16 @@
 <script src="script.js"></script>
 
 <script>
-// 🔥 SIDEBAR TOGGLE FIX
+// SIDEBAR CONTROL
 const sidebar = document.getElementById("sidebar");
 const menuBtn = document.getElementById("menuBtn");
 
-menuBtn.onclick = () => {
-    sidebar.classList.toggle("show");
-};
+menuBtn.onclick = () => sidebar.classList.toggle("show");
 
 function closeSidebar() {
     sidebar.classList.remove("show");
 }
 
-// click outside = close
 document.addEventListener("click", function(e) {
     if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
         sidebar.classList.remove("show");
@@ -73,4 +69,4 @@ document.addEventListener("click", function(e) {
 </script>
 
 </body>
-    </html>
+</html>
