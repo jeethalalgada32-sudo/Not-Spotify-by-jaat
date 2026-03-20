@@ -1,13 +1,17 @@
+// --- CONFIG & STATE ---
 const YOUTUBE_API_KEY = "AIzaSyDU1MC8SVdTJxBYtB5nQastJD7h7D5jyzg";
-let player, matrixInterval;
+let player;
 let isMatrixOn = false;
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+const chars = "01STREAMFLOWMATRIXSOURAV"; // Sourav's custom matrix characters
 
-// 1. Sidebar Logic
+// --- SIDEBAR ---
 document.getElementById("menuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("show");
 
-// 2. YouTube API Setup
+// --- YOUTUBE API SETUP ---
 var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api"; // Official Secure Path
+tag.src = "https://www.youtube.com/iframe_api"; 
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -19,11 +23,7 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-// 3. Smart AI Matrix Simulation (Bypass CORS)
-const canvas = document.getElementById('matrixCanvas');
-const ctx = canvas.getContext('2d');
-const chars = "01STREAMFLOWMATRIXSOURAV"; //
-
+// --- SMART MATRIX SIMULATION (CORS BYPASS) ---
 function startMatrixEffect() {
     if (!isMatrixOn) return;
     canvas.width = window.innerWidth;
@@ -32,7 +32,7 @@ function startMatrixEffect() {
     function draw() {
         if (!isMatrixOn) return;
 
-        // Trail effect
+        // Background trail
         ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
@@ -41,19 +41,19 @@ function startMatrixEffect() {
 
         for (let y = 0; y < canvas.height; y += step) {
             for (let x = 0; x < canvas.width; x += step) {
-                // HUMNA JUGAD: Center focus (Human Object) tracking simulation
+                // Focus area tracking logic (Artist in center)
                 const centerX = canvas.width / 2;
                 const centerY = canvas.height / 2;
                 const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
 
-                // Video ke main focus area (Artist/Body) par characters zyada chamkenge
+                // Center area (where the object/person is) gets green characters
                 if (dist < 300) { 
                     ctx.fillStyle = "#00ff41";
                     const char = chars[Math.floor(Math.random() * chars.length)];
                     ctx.fillText(char, x, y);
                 } else if (Math.random() > 0.98) {
-                    // Random background rain
-                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+                    // Background sparse rain
+                    ctx.fillStyle = "rgba(0, 255, 65, 0.2)";
                     ctx.fillText("0", x, y);
                 }
             }
@@ -63,7 +63,7 @@ function startMatrixEffect() {
     draw();
 }
 
-// 4. Toggle & Close Logic
+// --- UI CONTROLS ---
 document.getElementById("matrixToggle").onclick = function() {
     isMatrixOn = !isMatrixOn;
     this.classList.toggle('on');
@@ -80,7 +80,7 @@ document.getElementById("closeBtn").onclick = () => {
     player.stopVideo();
 };
 
-// 5. Search YouTube
+// --- SEARCH ENGINE ---
 async function searchYT() {
     const q = document.getElementById("searchInput").value;
     if (!q) return;
@@ -95,12 +95,17 @@ async function searchYT() {
         data.items.forEach(item => {
             const div = document.createElement("div");
             div.className = "card";
-            div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><div style="padding:10px; font-size:12px; text-align:center;">${item.snippet.title}</div>`;
+            div.innerHTML = `
+                <img src="${item.snippet.thumbnails.medium.url}">
+                <div style="padding:10px; font-size:12px; text-align:center;">${item.snippet.title}</div>
+            `;
             div.onclick = () => {
                 player.loadVideoById(item.id.videoId);
                 document.getElementById("videoOverlay").classList.add("active");
             };
             resultsDiv.appendChild(div);
         });
-    } catch (e) { resultsDiv.innerHTML = "<p style='color:red;'>Quota Exceeded or Error!</p>"; }
-}
+    } catch (e) { 
+        resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>API Quota Exceeded. Try tomorrow!</p>"; 
+    }
+                        }
