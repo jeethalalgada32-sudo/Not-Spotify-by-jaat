@@ -26,7 +26,8 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        // 🔥 FIXED MODEL (WORKING FREE)
+        model: "openchat/openchat-3.5",
         messages: [
           { role: "user", content: prompt }
         ]
@@ -39,7 +40,7 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
 
     let reply = "No response 😢";
 
-    // 🔥 FIXED RESPONSE HANDLING
+    // ✅ SAFE RESPONSE PARSE
     if (data.choices && data.choices.length > 0) {
       reply =
         data.choices[0]?.message?.content ||
