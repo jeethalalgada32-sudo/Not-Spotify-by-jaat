@@ -328,29 +328,27 @@ function generateWrapped() {
 
   generateImages(topSong, topArtist, personality);
 }
-
 function generateImages(topSong, topArtist, personality) {
-  const prompts = [
-    `music concert neon lights crowd energy cinematic`,
-    `${personality} music lover night city lights moody`,
-    `sound waves abstract neon green purple futuristic`,
-    `vinyl record player retro warm cozy room`,
-    `music festival aerial view colorful lights euphoric`
+  const searches = [
+    "music concert neon",
+    "night city music",
+    "sound waves abstract",
+    "vinyl record player",
+    "music festival crowd"
   ];
 
-  prompts.forEach((prompt, i) => {
+  searches.forEach((query, i) => {
     const card = document.getElementById(`img${i}`);
-    const seed = Math.floor(Math.random() * 999999);
-    const encoded = encodeURIComponent(prompt);
+    const seed = i + 1;
+    const url = `https://source.unsplash.com/512x512/?${encodeURIComponent(query)}&sig=${seed}`;
     
-    // Directly inject img tag — no JS Image() object
     card.innerHTML = `
       <img 
-        src="https://image.pollinations.ai/prompt/${encoded}?seed=${seed}&width=512&height=512&nologo=true"
+        src="${url}"
         style="width:100%;height:100%;object-fit:cover;display:block;"
-        onload="this.previousElementSibling && this.previousElementSibling.remove()"
         onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><span style=\\'font-size:32px\\'>🎵</span></div>'"
       >
+      <div class="img-label">${query}</div>
     `;
   });
 }
