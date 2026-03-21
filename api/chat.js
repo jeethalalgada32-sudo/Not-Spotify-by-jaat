@@ -26,7 +26,7 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct", // FREE MODEL
+        model: "mistralai/mistral-7b-instruct",
         messages: [
           { role: "user", content: prompt }
         ]
@@ -39,8 +39,16 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
 
     let reply = "No response 😢";
 
+    // 🔥 FIXED RESPONSE HANDLING
     if (data.choices && data.choices.length > 0) {
-      reply = data.choices[0].message.content;
+      reply =
+        data.choices[0]?.message?.content ||
+        data.choices[0]?.text ||
+        "No text found 😢";
+    } else if (data.error) {
+      reply = "❌ API Error: " + data.error.message;
+    } else {
+      reply = "⚠️ Unknown response: " + JSON.stringify(data);
     }
 
     return res.status(200).json({ reply });
