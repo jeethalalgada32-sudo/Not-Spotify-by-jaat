@@ -2,8 +2,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { prompt } = req.body;
-  const HF_KEY = "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";
-
+  const HF_KEY = process.env.HF_KEY;
   console.log("Starting image generation for:", prompt);
 
   try {
