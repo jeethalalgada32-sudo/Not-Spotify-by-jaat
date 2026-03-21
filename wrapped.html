@@ -356,9 +356,9 @@ function generateWrapped() {
 
 function generateImages(topSong, topArtist, personality, topArtists) {
   const prompts = [
-    `spotify wrapped music festival concert neon lights ${topArtist} aesthetic, vibrant colors, cinematic`,
-    `${personality} music lover night city lights aesthetic, moody atmospheric digital art`,
-    `abstract music visualization sound waves neon green purple, futuristic minimal`,
+    `spotify wrapped music festival concert neon lights ${topArtist} aesthetic vibrant colors cinematic`,
+    `${personality} music lover night city lights aesthetic moody atmospheric digital art`,
+    `abstract music visualization sound waves neon green purple futuristic minimal`,
     `vinyl record player retro aesthetic warm colors music room cozy`,
     `crowd at concert colorful lights energy euphoric music festival aerial view`
   ];
@@ -366,21 +366,40 @@ function generateImages(topSong, topArtist, personality, topArtists) {
   prompts.forEach((prompt, i) => {
     const card = document.getElementById(`img${i}`);
     const seed = Math.floor(Math.random() * 99999);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&nologo=true`;
+    
+    // New working URL format
+    const url = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&nologo=true&model=flux`;
+
+    card.innerHTML = `<div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>`;
 
     const img = new Image();
+    
     img.onload = () => {
       card.innerHTML = `
         <img src="${url}">
-        <div class="img-label">${prompt.split(',')[0]}</div>
+        <div class="img-label">${prompt.split(' ').slice(0,4).join(' ')}</div>
       `;
     };
+    
     img.onerror = () => {
-      card.innerHTML = `<div class="loading-img" style="color:#333">Failed to load</div>`;
+      // Fallback — try image.pollinations.ai
+      const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&nologo=true`;
+      const img2 = new Image();
+      img2.onload = () => {
+        card.innerHTML = `
+          <img src="${fallbackUrl}">
+          <div class="img-label">${prompt.split(' ').slice(0,4).join(' ')}</div>
+        `;
+      };
+      img2.onerror = () => {
+        card.innerHTML = `<div class="loading-img" style="color:#444">⚠️ Could not generate</div>`;
+      };
+      img2.src = fallbackUrl;
     };
+    
     img.src = url;
   });
-}
+  }
 
 function shareWrapped() {
   if (navigator.share) {
