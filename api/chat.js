@@ -46,7 +46,7 @@ Kabhi bhi robotic mat lagana — natural aur chill reh.`;
         "X-Title": "VibeBot DJ"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free", // better free model
+        model: "meta-llama/llama-3-8b-instruct:free", // better free model
         messages: [
           { role: "system", content: systemPrompt },
           ...conversationMessages
