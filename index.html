@@ -7,43 +7,13 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body<!-- Instagram browser detection -->
-<script>
-const isInstagram = navigator.userAgent.includes('Instagram');
-if (isInstagram) {
-  document.body.innerHTML = `
-    <div style="
-      display:flex; flex-direction:column; align-items:center;
-      justify-content:center; height:100vh; background:#0a0a0f;
-      color:#fff; text-align:center; padding:30px; gap:20px;
-    ">
-      <div style="font-size:48px">⚡</div>
-      <h2 style="color:#00ff88; font-size:22px">StreamFlow</h2>
-      <p style="color:#666; font-size:14px; line-height:1.6">
-        Instagram browser mein music play nahi hota.<br>
-        Chrome ya Safari mein kholo!
-      </p>
-      <a href="${window.location.href}" target="_blank" style="
-        background:#00ff88; color:#000; padding:14px 28px;
-        border-radius:25px; text-decoration:none;
-        font-weight:bold; font-size:15px;
-      ">Open in Browser 🚀</a>
-    </div>
-  `;
-}
-
-</script> {
+body {
   display: flex; flex-direction: column;
   height: 100dvh; background: #0a0a0f;
   color: #fff; font-family: 'Segoe UI', sans-serif;
   overflow: hidden;
 }
-<!-- 3D Particle Canvas -->
-<canvas id="bgCanvas" style="
-  position:fixed; top:0; left:0;
-  width:100%; height:100%;
-  z-index:0; pointer-events:none;
-"></canvas>
+
 header {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 12px; background: #111;
@@ -169,30 +139,54 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 @media (max-width: 768px) {
   body { height: 100dvh; }
   .main { flex-direction: column; }
-
-  .search-panel {
-    flex: 1; overflow-y: auto;
-    order: 1; min-height: 0;
-  }
-
+  .search-panel { flex: 1; overflow-y: auto; order: 1; min-height: 0; }
   .ai-panel {
     width: 100%; min-width: unset;
     height: 44vh; flex-shrink: 0;
     border-left: none; border-top: 1px solid #1e1e1e;
     order: 2;
   }
-
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   header h1 { font-size: 14px; }
   header input { font-size: 12px; padding: 7px 12px; }
   header .search-btn { font-size: 12px; padding: 7px 12px; }
   header .wrapped-btn { font-size: 11px; padding: 7px 10px; }
 }
+
 header, .main, .now-playing { position: relative; z-index: 1; }
 #player { display: none; }
 </style>
 </head>
 <body>
+
+<!-- Instagram browser detection -->
+<script>
+const isInstagram = navigator.userAgent.includes('Instagram');
+if (isInstagram) {
+  document.body.innerHTML = `
+    <div style="
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; height:100vh; background:#0a0a0f;
+      color:#fff; text-align:center; padding:30px; gap:20px;
+    ">
+      <div style="font-size:48px">⚡</div>
+      <h2 style="color:#00ff88; font-size:22px">StreamFlow</h2>
+      <p style="color:#666; font-size:14px; line-height:1.6">
+        Instagram browser mein music play nahi hota.<br>
+        Chrome ya Safari mein kholo!
+      </p>
+      <a href="${window.location.href}" target="_blank" style="
+        background:#00ff88; color:#000; padding:14px 28px;
+        border-radius:25px; text-decoration:none;
+        font-weight:bold; font-size:15px;
+      ">Open in Browser 🚀</a>
+    </div>
+  `;
+}
+</script>
+
+<!-- Canvas Background -->
+<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
 <header>
   <h1>⚡ StreamFlow</h1>
@@ -202,7 +196,6 @@ header, .main, .now-playing { position: relative; z-index: 1; }
 </header>
 
 <div class="main">
-
   <div class="search-panel">
     <div class="grid" id="results"></div>
   </div>
@@ -221,7 +214,6 @@ header, .main, .now-playing { position: relative; z-index: 1; }
       <button id="sendBtn" onclick="sendMsg()">→</button>
     </div>
   </div>
-
 </div>
 
 <div class="now-playing" id="nowPlaying">
@@ -236,22 +228,18 @@ header, .main, .now-playing { position: relative; z-index: 1; }
 <div id="player"></div>
 
 <script src="script.js"></script>
+
 <script>
 let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
 function cleanText(text) {
-  return text
-    .replace(/\*\*/g, "")
-    .replace(/\*/g, "")
-    .replace(/\[(\d+)\]/g, "")
-    .trim();
+  return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/\[(\d+)\]/g, "").trim();
 }
 
 function addAiMsg(text, type) {
   const container = document.getElementById("aiMessages");
   const div = document.createElement("div");
   div.className = "ai-msg " + type;
-
   if (type === "bot") {
     const lines = text.split("\n");
     let html = "";
@@ -261,8 +249,7 @@ function addAiMsg(text, type) {
       if (line.trim().startsWith("🎵")) {
         const songName = trimmed.replace("🎵", "").trim();
         html += `<div class="song-chip" onclick="playSongByName('${songName.replace(/'/g, "\\'")}')">
-          <span class="pi">▶</span>
-          <span>${songName}</span>
+          <span class="pi">▶</span><span>${songName}</span>
         </div>`;
       } else {
         html += `<p class="mood-text">${trimmed}</p>`;
@@ -272,7 +259,6 @@ function addAiMsg(text, type) {
   } else {
     div.innerText = text;
   }
-
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
@@ -282,13 +268,10 @@ async function sendMsg() {
   const btn = document.getElementById("sendBtn");
   const text = input.value.trim();
   if (!text) return;
-
   addAiMsg(text, "user");
   input.value = "";
   btn.disabled = true;
-
   chatHistory.push({ role: "user", content: text });
-
   const container = document.getElementById("aiMessages");
   const typing = document.createElement("div");
   typing.className = "ai-msg bot";
@@ -296,7 +279,6 @@ async function sendMsg() {
   typing.innerText = "Finding your vibe...";
   container.appendChild(typing);
   container.scrollTop = container.scrollHeight;
-
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
@@ -312,7 +294,6 @@ async function sendMsg() {
     typing.remove();
     addAiMsg("Something went wrong. Try again!", "bot");
   }
-
   btn.disabled = false;
   input.focus();
 }
@@ -325,9 +306,7 @@ async function playSongByName(name) {
       const item = data.items[0];
       playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, null);
     }
-  } catch(e) {
-    console.error("Play error:", e);
-  }
+  } catch(e) { console.error("Play error:", e); }
 }
 
 function stopPlayer() {
@@ -337,10 +316,11 @@ function stopPlayer() {
   currentQueueIndex = -1;
 }
 </script>
+
+<!-- Particle Animation -->
 <script>
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
-
 let W = canvas.width = window.innerWidth;
 let H = canvas.height = window.innerHeight;
 let mouse = { x: W/2, y: H/2 };
@@ -350,18 +330,9 @@ window.addEventListener('resize', () => {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
 });
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
 
-window.addEventListener('mousemove', e => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
-
-window.addEventListener('touchmove', e => {
-  mouse.x = e.touches[0].clientX;
-  mouse.y = e.touches[0].clientY;
-});
-
-// Particles
 const particles = [];
 const PARTICLE_COUNT = 80;
 
@@ -377,14 +348,10 @@ class Particle {
     this.color = Math.random() > 0.5 ? '0,255,136' : '0,204,255';
   }
   update() {
-    // Mouse attraction
     const dx = mouse.x - this.x;
     const dy = mouse.y - this.y;
     const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 150) {
-      this.x += dx * 0.01;
-      this.y += dy * 0.01;
-    }
+    if (dist < 150) { this.x += dx * 0.01; this.y += dy * 0.01; }
     this.x += this.speedX;
     this.y += this.speedY;
     if (this.x < 0 || this.x > W) this.speedX *= -1;
@@ -398,11 +365,8 @@ class Particle {
   }
 }
 
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-  particles.push(new Particle());
-}
+for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
 
-// Connect particles with lines
 function connectParticles() {
   for (let i = 0; i < particles.length; i++) {
     for (let j = i+1; j < particles.length; j++) {
@@ -421,7 +385,6 @@ function connectParticles() {
   }
 }
 
-// Wave effect
 function drawWaves() {
   for (let w = 0; w < 3; w++) {
     ctx.beginPath();
@@ -433,18 +396,12 @@ function drawWaves() {
         (mouse.y - H/2) * 0.05;
       ctx.lineTo(x, y);
     }
-    const colors = [
-      `rgba(0,255,136,0.03)`,
-      `rgba(0,204,255,0.025)`,
-      `rgba(150,100,255,0.02)`
-    ];
-    ctx.strokeStyle = colors[w];
+    ctx.strokeStyle = [`rgba(0,255,136,0.03)`, `rgba(0,204,255,0.025)`, `rgba(150,100,255,0.02)`][w];
     ctx.lineWidth = 1.5;
     ctx.stroke();
   }
 }
 
-// Glow near mouse
 function drawMouseGlow() {
   const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
   grad.addColorStop(0, 'rgba(0,255,136,0.06)');
@@ -465,5 +422,6 @@ function animate() {
 
 animate();
 </script>
+
 </body>
 </html>
