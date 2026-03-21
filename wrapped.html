@@ -328,29 +328,56 @@ function generateWrapped() {
 
   generateImages(topSong, topArtist, personality);
 }
-function generateImages(topSong, topArtist, personality) {
-  const searches = [
-    "music concert neon",
-    "night city music",
-    "sound waves abstract",
-    "vinyl record player",
-    "music festival crowd"
+
+async function generateImages(topSong, topArtist, personality) {
+  const HF_KEY = "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";
+
+  const prompts = [
+    `album cover art for ${topArtist} music vibrant neon colors professional`,
+    `${personality} music listener aesthetic moody cinematic lighting digital art`,
+    `music concert crowd neon lights energy cinematic`,
+    `abstract sound visualization colorful waves futuristic`,
+    `vinyl record music studio warm colors professional`
   ];
 
-  searches.forEach((query, i) => {
+  for (let i = 0; i < prompts.length; i++) {
     const card = document.getElementById(`img${i}`);
-    const seed = i + 1;
-    const url = `https://source.unsplash.com/512x512/?${encodeURIComponent(query)}&sig=${seed}`;
-    
-    card.innerHTML = `
-      <img 
-        src="${url}"
-        style="width:100%;height:100%;object-fit:cover;display:block;"
-        onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><span style=\\'font-size:32px\\'>🎵</span></div>'"
-      >
-      <div class="img-label">${query}</div>
-    `;
-  });
+    card.innerHTML = `<div class="placeholder"><div class="spinner"></div><span>Generating...</span></div>`;
+
+    try {
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${HF_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            inputs: prompts[i],
+            parameters: {
+              num_inference_steps: 20,
+              width: 512,
+              height: 512
+            }
+          })
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      card.innerHTML = `
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <div class="img-label">${prompts[i].split(' ').slice(0,4).join(' ')}</div>
+      `;
+
+    } catch(e) {
+      card.innerHTML = `<div class="placeholder"><span style="color:#444">Try again later</span></div>`;
+    }
+  }
 }
 
 function shareWrapped() {
