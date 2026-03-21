@@ -4,108 +4,396 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Wrapped 🎧</title>
-
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-    margin: 0;
-    background: #000;
-    color: white;
-    font-family: sans-serif;
-    padding: 20px;
+  background: #0a0a0f;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #666; text-decoration: none; font-size: 13px;
+  margin-bottom: 24px; cursor: pointer; background: none;
+  border: none; padding: 0;
+}
+.back-btn:hover { color: #fff; }
+
+.wrapped-title {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.wrapped-title h1 {
+  font-size: 28px; font-weight: 800;
+  background: linear-gradient(135deg, #00ff88, #00ccff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.wrapped-title p { color: #555; font-size: 13px; margin-top: 6px; }
+
+/* STATS GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-    gap: 15px;
+.stat-card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card.big { grid-column: span 2; }
+.stat-card .label {
+  font-size: 11px; color: #555;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.stat-card .value {
+  font-size: 22px; font-weight: 700; color: #fff;
+  line-height: 1.2;
+}
+.stat-card .sub {
+  font-size: 12px; color: #666; margin-top: 4px;
+}
+.stat-card .emoji {
+  position: absolute; right: 16px; top: 16px;
+  font-size: 28px; opacity: 0.3;
+}
+.stat-card.highlight { border-color: #00ff8833; background: #0a1a12; }
+.stat-card.highlight .value { color: #00ff88; }
+
+/* PERSONALITY */
+.personality-card {
+  background: linear-gradient(135deg, #0a0a1f, #1a0a2e);
+  border: 1px solid #2a1a4a;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.personality-card .tag {
+  display: inline-block;
+  background: #2a1a4a; color: #aa88ff;
+  font-size: 11px; padding: 4px 12px;
+  border-radius: 20px; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.personality-card h2 { font-size: 22px; margin-bottom: 8px; }
+.personality-card p { font-size: 13px; color: #888; line-height: 1.6; }
+
+/* TOP SONGS LIST */
+.section-title {
+  font-size: 13px; color: #555;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 14px;
 }
 
-.card {
-    background: #111;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid #333;
+.songs-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 32px;
 }
 
-.big {
-    grid-column: span 2;
-    font-size: 18px;
+.song-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #111; border: 1px solid #1e1e1e;
+  border-radius: 12px; padding: 10px 14px;
+}
+.song-row .rank {
+  font-size: 16px; font-weight: 800;
+  color: #333; min-width: 24px;
+}
+.song-row .rank.top { color: #00ff88; }
+.song-row .song-info { flex: 1; }
+.song-row .song-title { font-size: 13px; color: #fff; }
+.song-row .song-plays { font-size: 11px; color: #555; margin-top: 2px; }
+.song-row .bar-wrap {
+  width: 60px; height: 4px;
+  background: #1e1e1e; border-radius: 2px;
+}
+.song-row .bar {
+  height: 100%; background: #00ff88;
+  border-radius: 2px; transition: width 1s ease;
 }
 
-button {
-    margin-top: 20px;
-    padding: 10px;
-    width: 100%;
+/* AI IMAGES */
+.images-section { margin-bottom: 32px; }
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
+
+.ai-img-card {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid #1e1e1e; position: relative;
+  aspect-ratio: 1;
+  background: #111;
+  display: flex; align-items: center; justify-content: center;
+}
+.ai-img-card.featured {
+  grid-column: span 2;
+  aspect-ratio: 16/9;
+}
+.ai-img-card img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+.ai-img-card .img-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px 12px 12px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  font-size: 11px; color: #ccc;
+}
+.loading-img {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  color: #333; font-size: 12px;
+}
+.loading-img .spinner {
+  width: 24px; height: 24px;
+  border: 2px solid #1e1e1e;
+  border-top-color: #00ff88;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SHARE BTN */
+.share-btn {
+  width: 100%; padding: 14px;
+  border-radius: 25px; border: none;
+  background: linear-gradient(135deg, #00ff88, #00ccff);
+  color: #000; font-weight: 800; font-size: 15px;
+  cursor: pointer; margin-bottom: 16px;
+}
+.back-home {
+  width: 100%; padding: 12px;
+  border-radius: 25px;
+  border: 1px solid #333; background: none;
+  color: #888; font-size: 14px; cursor: pointer;
+}
+.back-home:hover { color: #fff; border-color: #555; }
+
+.not-enough {
+  text-align: center; padding: 60px 20px;
+  color: #555;
+}
+.not-enough h2 { font-size: 20px; margin-bottom: 8px; color: #fff; }
+.not-enough p { font-size: 13px; line-height: 1.6; }
 </style>
-
 </head>
-
 <body>
 
-<h1>🎧 Your Wrapped</h1>
-
-<div class="cards" id="wrappedCards"></div>
-
-<button onclick="location.href='index.html'">⬅ Back</button>
+<div id="app"></div>
 
 <script>
-// GET DATA
-let history = JSON.parse(localStorage.getItem("history")) || [];
+const history = JSON.parse(localStorage.getItem("history")) || [];
+
+const app = document.getElementById("app");
 
 if (history.length < 3) {
-    document.getElementById("wrappedCards").innerHTML = "<p>Listen more songs!</p>";
+  app.innerHTML = `
+    <div class="not-enough">
+      <h2>🎧 Not enough data yet!</h2>
+      <p>Listen to at least 3 songs first,<br>then come back for your Wrapped!</p>
+      <br>
+      <button class="back-home" onclick="location.href='index.html'">⬅ Back to StreamFlow</button>
+    </div>`;
 } else {
+  generateWrapped();
+}
 
-    let songCount = {};
-    let artistCount = {};
-    let maxRepeat = 0;
-    let repeatSong = "";
+function generateWrapped() {
+  // Analyze data
+  const songCount = {};
+  const artistCount = {};
+  let maxRepeat = 0, repeatSong = "";
+  let night = 0, day = 0;
 
-    history.forEach(item => {
-        songCount[item.title] = (songCount[item.title] || 0) + 1;
-        artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
+  history.forEach(item => {
+    songCount[item.title] = (songCount[item.title] || 0) + 1;
+    artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
+    if (songCount[item.title] > maxRepeat) {
+      maxRepeat = songCount[item.title];
+      repeatSong = item.title;
+    }
+    const hour = new Date(item.time).getHours();
+    if (hour >= 22 || hour < 5) night++; else day++;
+  });
 
-        if (songCount[item.title] > maxRepeat) {
-            maxRepeat = songCount[item.title];
-            repeatSong = item.title;
-        }
+  const topSongs = Object.entries(songCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const topArtists = Object.entries(artistCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const topSong = topSongs[0][0];
+  const topArtist = topArtists[0][0];
+  const maxPlays = topSongs[0][1];
+
+  // Personality
+  let personality, personalityDesc, personalityEmoji;
+  if (maxRepeat >= 4) {
+    personality = "Loop Lover";
+    personalityDesc = "You find a song you love and hit repeat until it's part of your soul.";
+    personalityEmoji = "🔁";
+  } else if (night > day) {
+    personality = "Night Owl";
+    personalityDesc = "Your best listening happens after midnight. Music sounds different when the world is asleep.";
+    personalityEmoji = "🌙";
+  } else if (Object.keys(songCount).length > history.length * 0.7) {
+    personality = "Explorer";
+    personalityDesc = "You never stop discovering. Every song is a new adventure for you.";
+    personalityEmoji = "🔥";
+  } else {
+    personality = "Vibe Curator";
+    personalityDesc = "You know exactly what you want and you stick to what hits right.";
+    personalityEmoji = "🎧";
+  }
+
+  // Render
+  app.innerHTML = `
+    <button class="back-btn" onclick="location.href='index.html'">← Back</button>
+
+    <div class="wrapped-title">
+      <h1>Your 2025 Wrapped</h1>
+      <p>${history.length} songs played • Your year in music</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card big highlight">
+        <div class="label">🔥 Top Song</div>
+        <div class="value">${topSong}</div>
+        <div class="sub">Played ${maxPlays}x</div>
+        <div class="emoji">🎵</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="label">🎤 Top Artist</div>
+        <div class="value">${topArtist}</div>
+        <div class="sub">${artistCount[topArtist]} plays</div>
+        <div class="emoji">⭐</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">📊 Total Plays</div>
+        <div class="value">${history.length}</div>
+        <div class="sub">songs listened</div>
+        <div class="emoji">📻</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">${night > day ? "🌙 Night Listener" : "☀️ Day Listener"}</div>
+        <div class="value">${night > day ? night : day}</div>
+        <div class="sub">${night > day ? "late night plays" : "daytime plays"}</div>
+        <div class="emoji">${night > day ? "🌙" : "☀️"}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">🔁 Most Replayed</div>
+        <div class="value" style="font-size:15px">${repeatSong}</div>
+        <div class="sub">${maxRepeat}x in a row</div>
+        <div class="emoji">🔂</div>
+      </div>
+    </div>
+
+    <div class="personality-card">
+      <div class="tag">Your Music Personality</div>
+      <h2>${personalityEmoji} ${personality}</h2>
+      <p>${personalityDesc}</p>
+    </div>
+
+    <p class="section-title">Top 5 Songs</p>
+    <div class="songs-list">
+      ${topSongs.map(([title, plays], i) => `
+        <div class="song-row">
+          <span class="rank ${i === 0 ? 'top' : ''}">${i + 1}</span>
+          <div class="song-info">
+            <div class="song-title">${title}</div>
+            <div class="song-plays">${plays} play${plays > 1 ? 's' : ''}</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar" style="width:${Math.round((plays/maxPlays)*100)}%"></div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <p class="section-title">🎨 AI Generated Vibes</p>
+    <div class="images-grid" id="imagesGrid">
+      <div class="ai-img-card featured" id="img0">
+        <div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>
+      </div>
+      <div class="ai-img-card" id="img1">
+        <div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>
+      </div>
+      <div class="ai-img-card" id="img2">
+        <div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>
+      </div>
+      <div class="ai-img-card" id="img3">
+        <div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>
+      </div>
+      <div class="ai-img-card" id="img4">
+        <div class="loading-img"><div class="spinner"></div><span>Generating...</span></div>
+      </div>
+    </div>
+    <br>
+
+    <button class="share-btn" onclick="shareWrapped()">Share My Wrapped 🎉</button>
+    <button class="back-home" onclick="location.href='index.html'">⬅ Back to StreamFlow</button>
+  `;
+
+  // Generate AI images
+  generateImages(topSong, topArtist, personality, topArtists);
+}
+
+function generateImages(topSong, topArtist, personality, topArtists) {
+  const prompts = [
+    `spotify wrapped music festival concert neon lights ${topArtist} aesthetic, vibrant colors, cinematic`,
+    `${personality} music lover night city lights aesthetic, moody atmospheric digital art`,
+    `abstract music visualization sound waves neon green purple, futuristic minimal`,
+    `vinyl record player retro aesthetic warm colors music room cozy`,
+    `crowd at concert colorful lights energy euphoric music festival aerial view`
+  ];
+
+  prompts.forEach((prompt, i) => {
+    const card = document.getElementById(`img${i}`);
+    const seed = Math.floor(Math.random() * 99999);
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&nologo=true`;
+
+    const img = new Image();
+    img.onload = () => {
+      card.innerHTML = `
+        <img src="${url}">
+        <div class="img-label">${prompt.split(',')[0]}</div>
+      `;
+    };
+    img.onerror = () => {
+      card.innerHTML = `<div class="loading-img" style="color:#333">Failed to load</div>`;
+    };
+    img.src = url;
+  });
+}
+
+function shareWrapped() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'My StreamFlow Wrapped 🎧',
+      text: 'Check out my music Wrapped on StreamFlow!',
+      url: window.location.href
     });
-
-    let topSong = Object.keys(songCount).sort((a,b)=>songCount[b]-songCount[a])[0];
-    let topArtist = Object.keys(artistCount).sort((a,b)=>artistCount[b]-artistCount[a])[0];
-
-    let cards = `
-        <div class="card big">
-            <h2>🔥 Top Song</h2>
-            <p>${topSong}</p>
-        </div>
-
-        <div class="card">
-            <h3>🎤 Top Artist</h3>
-            <p>${topArtist}</p>
-        </div>
-
-        <div class="card">
-            <h3>🔁 Most Replayed</h3>
-            <p>${repeatSong} (${maxRepeat}x)</p>
-        </div>
-
-        <div class="card">
-            <h3>📊 Total Plays</h3>
-            <p>${history.length}</p>
-        </div>
-    `;
-
-    document.getElementById("wrappedCards").innerHTML = cards;
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Link copied!');
+  }
 }
 </script>
-
 </body>
 </html>
