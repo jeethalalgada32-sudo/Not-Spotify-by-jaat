@@ -145,16 +145,20 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 /* MOBILE */
 @media (max-width: 768px) {
   body { overflow: hidden; }
-  .main { flex-direction: column-reverse; }
+  .main { flex-direction: column; }
   .ai-panel {
     width: 100%; min-width: unset;
-    height: 52vh; border-left: none;
-    border-bottom: 1px solid #1e1e1e;
+    height: 42vh; border-left: none;
+    border-top: 1px solid #1e1e1e;
+    order: 2;
   }
-  .search-panel { height: 48vh; overflow-y: auto; }
+  .search-panel {
+    height: 58vh; overflow-y: auto;
+    order: 1;
+  }
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-  header h1 { font-size: 15px; }
-  header input { font-size: 13px; }
+  header h1 { font-size: 14px; }
+  header input { font-size: 12px; }
 }
 
 #player { display: none; }
