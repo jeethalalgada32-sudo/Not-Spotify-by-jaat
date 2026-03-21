@@ -3,6 +3,9 @@ export default async function handler(req, res) {
 
   const { prompt } = req.body;
   const HF_KEY = process.env.HF_KEY;
+  
+  console.log("HF_KEY exists:", !!HF_KEY);
+  console.log("HF_KEY length:", HF_KEY?.length);
   console.log("Starting image generation for:", prompt);
 
   try {
