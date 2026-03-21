@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Wrapped 🎧</title>
-<script src="https://js.puter.com/v2/"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -332,11 +331,11 @@ function generateWrapped() {
 
 async function generateImages(topSong, topArtist, personality) {
   const prompts = [
-    `album cover art for ${topArtist} music vibrant neon colors professional digital art`,
-    `${personality} music listener aesthetic moody cinematic lighting digital art`,
-    `music concert crowd neon lights energy cinematic photography`,
-    `abstract sound visualization colorful waves futuristic art`,
-    `vinyl record music studio warm colors professional photo`
+    `album cover art for ${topArtist} music vibrant neon colors professional`,
+    `${personality} music listener aesthetic moody cinematic lighting`,
+    `music concert crowd neon lights energy cinematic`,
+    `abstract sound visualization colorful waves futuristic`,
+    `vinyl record music studio warm colors professional`
   ];
 
   for (let i = 0; i < prompts.length; i++) {
@@ -344,16 +343,22 @@ async function generateImages(topSong, topArtist, personality) {
     card.innerHTML = `<div class="placeholder"><div class="spinner"></div><span>Generating...</span></div>`;
 
     try {
-      const imgElement = await puter.ai.txt2img(prompts[i]);
+      const res = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompts[i] })
+      });
 
-      card.innerHTML = "";
-      imgElement.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
-      card.appendChild(imgElement);
+      const data = await res.json();
 
-      const label = document.createElement("div");
-      label.className = "img-label";
-      label.innerText = prompts[i].split(' ').slice(0, 4).join(' ');
-      card.appendChild(label);
+      if (data.image) {
+        card.innerHTML = `
+          <img src="${data.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div class="img-label">${prompts[i].split(' ').slice(0,4).join(' ')}</div>
+        `;
+      } else {
+        throw new Error(data.error || "No image");
+      }
 
     } catch(e) {
       console.error("Image error:", e);
@@ -376,4 +381,4 @@ function shareWrapped() {
 }
 </script>
 </body>
-</html>
+  </html>
