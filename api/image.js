@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   console.log("PROMPT:", prompt);
   try {
     const response = await fetch(
-      "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2-1",
+      "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-dev",
       {
         method: "POST",
         headers: {
