@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,14 +39,10 @@ header .wrapped-btn {
 }
 header .wrapped-btn:hover { color: #fff; border-color: #555; }
 
-.main {
-  display: flex; flex: 1; overflow: hidden;
-}
+.main { display: flex; flex: 1; overflow: hidden; }
 
 /* SEARCH PANEL */
-.search-panel {
-  flex: 1; overflow-y: auto; padding: 16px;
-}
+.search-panel { flex: 1; overflow-y: auto; padding: 16px; }
 
 .grid {
   display: grid;
@@ -78,10 +73,7 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   display: flex; align-items: center; gap: 8px;
   flex-shrink: 0;
 }
-.ai-header .dot {
-  width: 8px; height: 8px;
-  border-radius: 50%; background: #00ff88;
-}
+.ai-header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; }
 .ai-header .name { font-size: 14px; font-weight: bold; color: #00ff88; }
 .ai-header small { color: #444; font-size: 11px; margin-left: auto; }
 
@@ -153,23 +145,14 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 /* MOBILE */
 @media (max-width: 768px) {
   body { overflow: hidden; }
-
   .main { flex-direction: column-reverse; }
-
   .ai-panel {
     width: 100%; min-width: unset;
     height: 52vh; border-left: none;
     border-bottom: 1px solid #1e1e1e;
   }
-
-  .search-panel {
-    height: 48vh; overflow-y: auto;
-  }
-
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-
+  .search-panel { height: 48vh; overflow-y: auto; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   header h1 { font-size: 15px; }
   header input { font-size: 13px; }
 }
@@ -189,11 +172,7 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 <div class="main">
 
   <div class="search-panel">
-    <div class="grid" id="results">
-      <p style="color:#333;font-size:13px;grid-column:1/-1;padding:20px 0">
-        Search for songs above or ask VibeBot 👇
-      </p>
-    </div>
+    <div class="grid" id="results"></div>
   </div>
 
   <div class="ai-panel">
@@ -312,11 +291,7 @@ async function playSongByName(name) {
     const data = await res.json();
     if (data.items && data.items.length > 0) {
       const item = data.items[0];
-      player.loadVideoById(item.id.videoId);
-      document.getElementById("npTitle").innerText = item.snippet.title;
-      document.getElementById("nowPlaying").classList.add("active");
-      history.push({ title: item.snippet.title, artist: item.snippet.channelTitle, time: Date.now() });
-      localStorage.setItem("history", JSON.stringify(history));
+      playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, null);
     }
   } catch(e) {
     console.error("Play error:", e);
@@ -326,8 +301,10 @@ async function playSongByName(name) {
 function stopPlayer() {
   if (player && player.stopVideo) player.stopVideo();
   document.getElementById("nowPlaying").classList.remove("active");
+  currentQueue = [];
+  currentQueueIndex = -1;
 }
 </script>
 
 </body>
-  </html>      
+</html>
