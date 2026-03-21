@@ -7,23 +7,19 @@ export default async function handler(req, res) {
     const { message, history } = req.body;
 
     if (!process.env.OPENROUTER_API_KEY) {
-      return res.status(500).json({ reply: "API key missing 😢" });
+      return res.status(500).json({ reply: "⚠️ API key missing. Please contact admin." });
     }
 
-    // Build proper conversation history for context
     const conversationMessages = [];
 
-    // System prompt — DJ AI personality
-    const systemPrompt = `Tu ek cool AI DJ hai jiska naam "VibeBot" hai 🎧
-Tu Hinglish mein baat karta hai — Hindi + English mix.
-Tu user ka mood samajhta hai aur unke vibe ke hisaab se songs suggest karta hai.
-Tu fun, energetic aur friendly hai — jaise ek best friend jo music ka expert ho.
-Jab songs suggest kare toh format yeh ho:
+    const systemPrompt = `You are VibeBot 🎧 — an AI music companion and DJ.
+You speak in a cool, friendly, and professional tone with a mix of English and casual Hinglish.
+Your job is to understand the user's mood and suggest perfect songs accordingly.
+When suggesting songs, always use this format:
 🎵 Song Name - Artist Name
-Har response mein 2-4 songs suggest kar aur thoda emotional/fun commentary bhi de.
-Kabhi bhi robotic mat lagana — natural aur chill reh.`;
+Suggest 2-4 songs per response with a short vibe check commentary.
+Keep it natural, fun, and never robotic.`;
 
-    // Add chat history as proper conversation
     if (history && history.length > 0) {
       history.slice(-6).forEach(h => {
         if (h.role === "user") {
@@ -34,7 +30,6 @@ Kabhi bhi robotic mat lagana — natural aur chill reh.`;
       });
     }
 
-    // Add current user message
     conversationMessages.push({ role: "user", content: message });
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -42,11 +37,11 @@ Kabhi bhi robotic mat lagana — natural aur chill reh.`;
       headers: {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://your-site.vercel.app", // apna URL daal
+        "HTTP-Referer": "https://your-site.vercel.app",
         "X-Title": "VibeBot DJ"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3-8b-instruct:free", // better free model
+        model: "openrouter/auto",
         messages: [
           { role: "system", content: systemPrompt },
           ...conversationMessages
@@ -56,16 +51,19 @@ Kabhi bhi robotic mat lagana — natural aur chill reh.`;
       })
     });
 
+    // Log full error from OpenRouter
     if (!response.ok) {
       const errText = await response.text();
-      console.error("API HTTP Error:", response.status, errText);
-      return res.status(500).json({ reply: `API Error ${response.status} 😢` });
+      console.error("OpenRouter Error:", response.status, errText);
+      return res.status(500).json({ 
+        reply: `❌ API Error ${response.status}: ${errText}` 
+      });
     }
 
     const data = await response.json();
     console.log("AI RAW:", JSON.stringify(data));
 
-    let reply = "Kuch samajh nahi aaya, dobara try kar yaar 😅";
+    let reply = "Hmm, couldn't get a response. Please try again! 😅";
 
     if (data.choices && data.choices.length > 0) {
       reply = data.choices[0]?.message?.content || "No text found 😢";
@@ -77,6 +75,6 @@ Kabhi bhi robotic mat lagana — natural aur chill reh.`;
 
   } catch (err) {
     console.error("Server Error:", err);
-    return res.status(500).json({ reply: "Server crash ho gaya 💥 Dobara try kar!" });
+    return res.status(500).json({ reply: "⚠️ Server error. Please try again later." });
   }
 }
