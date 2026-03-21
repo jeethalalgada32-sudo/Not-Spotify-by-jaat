@@ -26,8 +26,7 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        // 🔥 FIXED MODEL (WORKING FREE)
-        model: "openchat/openchat-3.5",
+        model: "meta-llama/llama-3-8b-instruct",
         messages: [
           { role: "user", content: prompt }
         ]
@@ -40,7 +39,6 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
 
     let reply = "No response 😢";
 
-    // ✅ SAFE RESPONSE PARSE
     if (data.choices && data.choices.length > 0) {
       reply =
         data.choices[0]?.message?.content ||
@@ -58,4 +56,4 @@ Analyze user vibe, suggest songs, and talk like a cool AI DJ in Hinglish 😎
     console.error(err);
     return res.status(500).json({ reply: "Server crash 💥" });
   }
-}
+        }
