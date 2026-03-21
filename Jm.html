@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="result">Testing...</div>
+<img id="testImg">
+<script>
+async function test() {
+  const HF_KEY = "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";
+  
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HF_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputs: "a cat" })
+      }
+    );
+    
+    document.getElementById("result").innerText = "Status: " + response.status;
+    
+    if (response.ok) {
+      const blob = await response.blob();
+      document.getElementById("testImg").src = URL.createObjectURL(blob);
+      document.getElementById("result").innerText = "SUCCESS!";
+    } else {
+      const text = await response.text();
+      document.getElementById("result").innerText = "Error: " + text;
+    }
+  } catch(e) {
+    document.getElementById("result").innerText = "Catch: " + e.message;
+  }
+}
+test();
+</script>
+</body>
+</html>
