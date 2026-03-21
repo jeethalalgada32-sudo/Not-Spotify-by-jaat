@@ -7,7 +7,31 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
+body<!-- Instagram browser detection -->
+<script>
+const isInstagram = navigator.userAgent.includes('Instagram');
+if (isInstagram) {
+  document.body.innerHTML = `
+    <div style="
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; height:100vh; background:#0a0a0f;
+      color:#fff; text-align:center; padding:30px; gap:20px;
+    ">
+      <div style="font-size:48px">⚡</div>
+      <h2 style="color:#00ff88; font-size:22px">StreamFlow</h2>
+      <p style="color:#666; font-size:14px; line-height:1.6">
+        Instagram browser mein music play nahi hota.<br>
+        Chrome ya Safari mein kholo!
+      </p>
+      <a href="${window.location.href}" target="_blank" style="
+        background:#00ff88; color:#000; padding:14px 28px;
+        border-radius:25px; text-decoration:none;
+        font-weight:bold; font-size:15px;
+      ">Open in Browser 🚀</a>
+    </div>
+  `;
+}
+</script> {
   display: flex; flex-direction: column;
   height: 100dvh; background: #0a0a0f;
   color: #fff; font-family: 'Segoe UI', sans-serif;
