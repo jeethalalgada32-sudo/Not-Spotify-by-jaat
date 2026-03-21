@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Wrapped 🎧</title>
+<script src="https://js.puter.com/v2/"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -330,14 +331,12 @@ function generateWrapped() {
 }
 
 async function generateImages(topSong, topArtist, personality) {
-  const HF_KEY = "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";
-
   const prompts = [
-    `album cover art for ${topArtist} music vibrant neon colors professional`,
+    `album cover art for ${topArtist} music vibrant neon colors professional digital art`,
     `${personality} music listener aesthetic moody cinematic lighting digital art`,
-    `music concert crowd neon lights energy cinematic`,
-    `abstract sound visualization colorful waves futuristic`,
-    `vinyl record music studio warm colors professional`
+    `music concert crowd neon lights energy cinematic photography`,
+    `abstract sound visualization colorful waves futuristic art`,
+    `vinyl record music studio warm colors professional photo`
   ];
 
   for (let i = 0; i < prompts.length; i++) {
@@ -345,44 +344,20 @@ async function generateImages(topSong, topArtist, personality) {
     card.innerHTML = `<div class="placeholder"><div class="spinner"></div><span>Generating...</span></div>`;
 
     try {
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${HF_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            inputs: prompts[i],
-            parameters: {
-              num_inference_steps: 15,
-              width: 512,
-              height: 512
-            },
-            options: {
-              wait_for_model: true
-            }
-          })
-        }
-      );
+      const imgElement = await puter.ai.txt2img(prompts[i]);
 
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error(`Image ${i} failed:`, response.status, errText);
-        throw new Error("Failed");
-      }
+      card.innerHTML = "";
+      imgElement.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
+      card.appendChild(imgElement);
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-
-      card.innerHTML = `
-        <img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block;">
-        <div class="img-label">${prompts[i].split(' ').slice(0,4).join(' ')}</div>
-      `;
+      const label = document.createElement("div");
+      label.className = "img-label";
+      label.innerText = prompts[i].split(' ').slice(0, 4).join(' ');
+      card.appendChild(label);
 
     } catch(e) {
-      card.innerHTML = `<div class="placeholder"><span style="color:#444">Try again later</span></div>`;
+      console.error("Image error:", e);
+      card.innerHTML = `<div class="placeholder"><span style="color:#444">Could not generate</span></div>`;
     }
   }
 }
