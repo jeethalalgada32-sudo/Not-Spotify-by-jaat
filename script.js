@@ -36,8 +36,10 @@ function playNext() {
   player.loadVideoById(next.videoId);
   document.getElementById("npTitle").innerText = next.title;
   document.getElementById("nowPlaying").classList.add("active");
+  document.getElementById("playPauseBtn").innerText = "⏸"; // ← add
   history.push({ title: next.title, artist: next.artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI(); // ← add
 }
 
 // Play a song and set queue
