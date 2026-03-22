@@ -124,27 +124,21 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 .ai-input button:disabled { background: #222; color: #555; cursor: not-allowed; }
 
 /* NOW PLAYING */
-.now-playing {
-  display: none; align-items: center; gap: 8px;
-  padding: 10px 16px; background: #111;
-  border-top: 1px solid #1e1e1e; flex-shrink: 0;
-  cursor: pointer;
-}
-.now-playing.active { display: flex; }
-.np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; }
-.np-info { flex: 1; min-width: 0; }
-.np-title { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.np-sub { font-size: 11px; color: #555; }
-
-.np-controls {
-  display: flex; align-items: center; gap: 2px; flex-shrink: 0;
-}
-.np-controls button, .np-queue-btn, .np-close {
-  background: none; border: none; color: #aaa; font-size: 18px;
-  cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s;
-}
-.np-controls button:hover, .np-queue-btn:hover { color: #00ff88; }
-.np-close:hover { color: #fff; }
+<!-- Now Playing Bar -->
+<div class="now-playing" id="nowPlaying">
+  <span class="np-icon" onclick="openModal()" style="cursor:pointer;">♫</span>
+  <div class="np-info" onclick="openModal()" style="cursor:pointer;">
+    <div class="np-title" id="npTitle">—</div>
+    <div class="np-sub">Now Playing • tap to expand</div>
+  </div>
+  <div class="np-controls">
+    <button onclick="playPrev()" title="Previous">⏮</button>
+    <button id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">⏸</button>
+    <button onclick="playNext()" title="Next">⏭</button>
+  </div>
+  <button class="np-queue-btn" onclick="toggleQueue()" title="Up Next">☰</button>
+  <button class="np-close" onclick="stopPlayer()">✕</button>
+</div>
 
 /* QUEUE PANEL */
 .queue-panel {
