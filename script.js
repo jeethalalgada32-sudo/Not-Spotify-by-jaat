@@ -5,7 +5,6 @@ let history = JSON.parse(localStorage.getItem("history")) || [];
 let currentQueue = [];
 let currentQueueIndex = -1;
 
-// YouTube API load
 let tag = document.createElement("script");
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
@@ -16,16 +15,13 @@ function onYouTubeIframeAPIReady() {
     playerVars: { autoplay: 1 },
     events: {
       onStateChange: function(event) {
-        if (event.data === YT.PlayerState.ENDED) {
-          playNext();
-        }
+        if (event.data === YT.PlayerState.ENDED) playNext();
       }
     }
   });
   showSuggestions();
 }
 
-// Play next in queue
 function playNext() {
   if (currentQueue.length === 0) return;
   currentQueueIndex = (currentQueueIndex + 1) % currentQueue.length;
@@ -40,7 +36,6 @@ function playNext() {
   if (typeof updateModal === 'function') updateModal(next.videoId, next.title, next.artist);
 }
 
-// Play a song and set queue
 function playSong(videoId, title, artist, queue) {
   if (queue) {
     currentQueue = queue;
@@ -55,7 +50,6 @@ function playSong(videoId, title, artist, queue) {
   if (typeof updateModal === 'function') updateModal(videoId, title, artist);
 }
 
-// History based suggestions
 async function showSuggestions() {
   if (history.length < 3) {
     document.getElementById("results").innerHTML = `
@@ -64,73 +58,51 @@ async function showSuggestions() {
       </p>`;
     return;
   }
-
   const artistCount = {};
   history.forEach(item => {
     artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
   });
   const topArtist = Object.entries(artistCount).sort((a,b) => b[1]-a[1])[0][0];
-
   const results = document.getElementById("results");
   results.innerHTML = `
     <p style="color:#555;font-size:11px;text-transform:uppercase;letter-spacing:1px;grid-column:1/-1;padding-bottom:4px">
       🎵 Based on your history
     </p>`;
-
-  const query = `${topArtist} songs`;
-  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(topArtist + ' songs')}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
   if (!data.items) return;
-
   const queue = data.items.map(item => ({
-    videoId: item.id.videoId,
-    title: item.snippet.title,
-    artist: item.snippet.channelTitle
+    videoId: item.id.videoId, title: item.snippet.title, artist: item.snippet.channelTitle
   }));
-
   data.items.forEach(item => {
     const div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `
-      <img src="${item.snippet.thumbnails.medium.url}">
-      <p>${item.snippet.title}</p>
-    `;
+    div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><p>${item.snippet.title}</p>`;
     div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue);
     results.appendChild(div);
   });
 }
 
-// Search YouTube
 async function searchYT() {
   const q = document.getElementById("searchInput").value.trim();
   if (!q) return;
-
   const results = document.getElementById("results");
   results.innerHTML = `<p style="color:#444;font-size:13px;grid-column:1/-1">Searching...</p>`;
-
   const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
   results.innerHTML = "";
-
   const queue = data.items.map(item => ({
-    videoId: item.id.videoId,
-    title: item.snippet.title,
-    artist: item.snippet.channelTitle
+    videoId: item.id.videoId, title: item.snippet.title, artist: item.snippet.channelTitle
   }));
-
   data.items.forEach(item => {
     const div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `
-      <img src="${item.snippet.thumbnails.medium.url}">
-      <p>${item.snippet.title}</p>
-    `;
+    div.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><p>${item.snippet.title}</p>`;
     div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue);
     results.appendChild(div);
   });
 }
 
-// Wrapped
 function generateWrapped() {
   if (history.length < 5) { alert("Listen to more songs first!"); return; }
   location.href = "wrapped.html";
