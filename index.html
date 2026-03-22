@@ -124,29 +124,69 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 .ai-input button:disabled { background: #222; color: #555; cursor: not-allowed; }
 
 /* NOW PLAYING */
-.now-playing {
-  display: none; align-items: center; gap: 8px;
-  padding: 10px 16px; background: #111;
-  border-top: 1px solid #1e1e1e; flex-shrink: 0;
-}
-.now-playing.active { display: flex; }
-.np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; }
-.np-info { flex: 1; min-width: 0; }
-.np-title { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.np-sub { font-size: 11px; color: #555; }
+<!-- Now Playing Bar -->
+<div class="now-playing" id="nowPlaying" onclick="openModal()">
+  <span class="np-icon">♫</span>
+  <div class="np-info">
+    <div class="np-title" id="npTitle">—</div>
+    <div class="np-sub">Now Playing • tap to expand</div>
+  </div>
+  <div class="np-controls" onclick="event.stopPropagation()">
+    <button onclick="playPrev()" title="Previous">⏮</button>
+    <button id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">⏸</button>
+    <button onclick="playNext()" title="Next">⏭</button>
+  </div>
+  <button class="np-queue-btn" onclick="event.stopPropagation(); toggleQueue()" title="Up Next">☰</button>
+  <button class="np-close" onclick="event.stopPropagation(); stopPlayer()">✕</button>
+</div>
 
-.np-controls {
-  display: flex; align-items: center; gap: 2px;
-  flex-shrink: 0;
-}
-.np-controls button, .np-queue-btn, .np-close {
-  background: none; border: none;
-  color: #aaa; font-size: 18px;
-  cursor: pointer; padding: 4px 8px;
-  border-radius: 8px; transition: all 0.2s;
-}
-.np-controls button:hover, .np-queue-btn:hover { color: #00ff88; }
-.np-close:hover { color: #fff; }
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal">
+  <div class="vm-header">
+    <button class="vm-down" onclick="closeModal()">⌄</button>
+    <div class="vm-toggle">
+      <button id="songBtn" class="active" onclick="setMode('song')">Song</button>
+      <button id="videoBtn" onclick="setMode('video')">Video</button>
+    </div>
+    <button style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">⋯</button>
+  </div>
+
+  <div class="vm-media" id="vmMedia">
+    <img class="vm-thumb" id="vmThumb" src="">
+    <div id="vmPlayer" style="display:none;"></div>
+  </div>
+
+  <div class="vm-info">
+    <h2 id="vmTitle">—</h2>
+    <p id="vmArtist">—</p>
+  </div>
+
+  <div class="vm-progress">
+    <div class="vm-bar" onclick="vmSeek(event)">
+      <div class="vm-fill" id="vmFill"></div>
+    </div>
+    <div class="vm-times">
+      <span id="vmCurrent">0:00</span>
+      <span id="vmTotal">0:00</span>
+    </div>
+  </div>
+
+  <div class="vm-controls">
+    <button class="vm-ctrl-side" onclick="playPrev()">⏮</button>
+    <button class="vm-ctrl-main" id="vmPPBtn" onclick="togglePlayPause()">⏸</button>
+    <button class="vm-ctrl-side" onclick="playNext()">⏭</button>
+  </div>
+
+  <div class="vm-tabs">
+    <button class="active" onclick="vmTab(this,'upnext')">Up Next</button>
+    <button onclick="vmTab(this,'related')">Related</button>
+  </div>
+
+  <div class="vm-tab-content" id="vmUpnext"></div>
+  <div class="vm-tab-content" id="vmRelated" style="display:none;">
+    <p style="color:#444;font-size:12px;padding:12px">Coming soon!</p>
+  </div>
+</div>
 
 /* QUEUE PANEL */
 .queue-panel {
