@@ -16,15 +16,12 @@ function onYouTubeIframeAPIReady() {
     playerVars: { autoplay: 1 },
     events: {
       onStateChange: function(event) {
-        // Song khatam ho to next auto play
         if (event.data === YT.PlayerState.ENDED) {
           playNext();
         }
       }
     }
   });
-
-  // Page load pe suggestions show karo
   showSuggestions();
 }
 
@@ -36,10 +33,11 @@ function playNext() {
   player.loadVideoById(next.videoId);
   document.getElementById("npTitle").innerText = next.title;
   document.getElementById("nowPlaying").classList.add("active");
-  document.getElementById("playPauseBtn").innerText = "⏸"; // ← add
+  document.getElementById("playPauseBtn").innerText = "⏸";
   history.push({ title: next.title, artist: next.artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
-  updateQueueUI(); // ← add
+  updateQueueUI();
+  if (typeof updateModal === 'function') updateModal(next.videoId, next.title, next.artist);
 }
 
 // Play a song and set queue
@@ -51,8 +49,10 @@ function playSong(videoId, title, artist, queue) {
   player.loadVideoById(videoId);
   document.getElementById("npTitle").innerText = title;
   document.getElementById("nowPlaying").classList.add("active");
+  document.getElementById("playPauseBtn").innerText = "⏸";
   history.push({ title, artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
+  if (typeof updateModal === 'function') updateModal(videoId, title, artist);
 }
 
 // History based suggestions
@@ -65,13 +65,11 @@ async function showSuggestions() {
     return;
   }
 
-  // Top artists from history
   const artistCount = {};
   history.forEach(item => {
     artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
   });
   const topArtist = Object.entries(artistCount).sort((a,b) => b[1]-a[1])[0][0];
-  const topSong = history[history.length - 1].title;
 
   const results = document.getElementById("results");
   results.innerHTML = `
@@ -79,11 +77,9 @@ async function showSuggestions() {
       🎵 Based on your history
     </p>`;
 
-  // Search based on top artist
   const query = `${topArtist} songs`;
   const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
-
   if (!data.items) return;
 
   const queue = data.items.map(item => ({
@@ -92,7 +88,7 @@ async function showSuggestions() {
     artist: item.snippet.channelTitle
   }));
 
-  data.items.forEach((item, idx) => {
+  data.items.forEach(item => {
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
@@ -114,7 +110,6 @@ async function searchYT() {
 
   const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
-
   results.innerHTML = "";
 
   const queue = data.items.map(item => ({
@@ -123,7 +118,7 @@ async function searchYT() {
     artist: item.snippet.channelTitle
   }));
 
-  data.items.forEach((item, idx) => {
+  data.items.forEach(item => {
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
@@ -139,4 +134,4 @@ async function searchYT() {
 function generateWrapped() {
   if (history.length < 5) { alert("Listen to more songs first!"); return; }
   location.href = "wrapped.html";
-  }
+}
