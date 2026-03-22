@@ -16,20 +16,15 @@ function onYouTubeIframeAPIReady() {
     playerVars: { autoplay: 1 },
     events: {
       onStateChange: function(event) {
+        // Song khatam ho to next auto play
         if (event.data === YT.PlayerState.ENDED) {
           playNext();
-        }
-        if (event.data === YT.PlayerState.PLAYING) {
-          document.getElementById("playPauseBtn").innerText = "⏸";
-          document.getElementById("modalPlayPauseBtn").innerText = "⏸";
-        }
-        if (event.data === YT.PlayerState.PAUSED) {
-          document.getElementById("playPauseBtn").innerText = "▶";
-          document.getElementById("modalPlayPauseBtn").innerText = "▶";
         }
       }
     }
   });
+
+  // Page load pe suggestions show karo
   showSuggestions();
 }
 
@@ -38,46 +33,24 @@ function playNext() {
   if (currentQueue.length === 0) return;
   currentQueueIndex = (currentQueueIndex + 1) % currentQueue.length;
   const next = currentQueue[currentQueueIndex];
-  const thumb = `https://img.youtube.com/vi/${next.videoId}/mqdefault.jpg`;
-  playSong(next.videoId, next.title, next.artist, null, thumb);
-  updateQueueUI();
-  updateModalQueueUI();
+  player.loadVideoById(next.videoId);
+  document.getElementById("npTitle").innerText = next.title;
+  document.getElementById("nowPlaying").classList.add("active");
+  document.getElementById("playPauseBtn").innerText = "⏸"; // ← add
+  history.push({ title: next.title, artist: next.artist, time: Date.now() });
+  localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI(); // ← add
 }
 
-// Play a song
-function playSong(videoId, title, artist, queue, thumb) {
+// Play a song and set queue
+function playSong(videoId, title, artist, queue) {
   if (queue) {
     currentQueue = queue;
     currentQueueIndex = queue.findIndex(q => q.videoId === videoId);
   }
-
   player.loadVideoById(videoId);
-
-  // Thumbnail
-  const thumbUrl = thumb || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-
-  // Update now playing bar
   document.getElementById("npTitle").innerText = title;
   document.getElementById("nowPlaying").classList.add("active");
-  document.getElementById("playPauseBtn").innerText = "⏸";
-
-  // Show thumbnail in bar
-  const npThumb = document.getElementById("npThumb");
-  const npIcon = document.getElementById("npIcon");
-  if (npThumb) { npThumb.src = thumbUrl; npThumb.classList.add("show"); }
-  if (npIcon) npIcon.style.display = "none";
-
-  // Update modal info
-  const modalTitle = document.getElementById("modalTitle");
-  const modalArtist = document.getElementById("modalArtist");
-  const modalThumb = document.getElementById("modalThumb");
-  const modalPPBtn = document.getElementById("modalPlayPauseBtn");
-  if (modalTitle) modalTitle.innerText = title;
-  if (modalArtist) modalArtist.innerText = artist;
-  if (modalThumb) modalThumb.src = thumbUrl;
-  if (modalPPBtn) modalPPBtn.innerText = "⏸";
-
-  // Save history
   history.push({ title, artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
 }
@@ -92,11 +65,13 @@ async function showSuggestions() {
     return;
   }
 
+  // Top artists from history
   const artistCount = {};
   history.forEach(item => {
     artistCount[item.artist] = (artistCount[item.artist] || 0) + 1;
   });
   const topArtist = Object.entries(artistCount).sort((a,b) => b[1]-a[1])[0][0];
+  const topSong = history[history.length - 1].title;
 
   const results = document.getElementById("results");
   results.innerHTML = `
@@ -104,8 +79,11 @@ async function showSuggestions() {
       🎵 Based on your history
     </p>`;
 
-  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(topArtist + ' songs')}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
+  // Search based on top artist
+  const query = `${topArtist} songs`;
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
+
   if (!data.items) return;
 
   const queue = data.items.map(item => ({
@@ -114,12 +92,14 @@ async function showSuggestions() {
     artist: item.snippet.channelTitle
   }));
 
-  data.items.forEach(item => {
-    const thumb = item.snippet.thumbnails.medium.url;
+  data.items.forEach((item, idx) => {
     const div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `<img src="${thumb}"><p>${item.snippet.title}</p>`;
-    div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue, thumb);
+    div.innerHTML = `
+      <img src="${item.snippet.thumbnails.medium.url}">
+      <p>${item.snippet.title}</p>
+    `;
+    div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue);
     results.appendChild(div);
   });
 }
@@ -134,6 +114,7 @@ async function searchYT() {
 
   const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YOUTUBE_API_KEY}`);
   const data = await res.json();
+
   results.innerHTML = "";
 
   const queue = data.items.map(item => ({
@@ -142,12 +123,14 @@ async function searchYT() {
     artist: item.snippet.channelTitle
   }));
 
-  data.items.forEach(item => {
-    const thumb = item.snippet.thumbnails.medium.url;
+  data.items.forEach((item, idx) => {
     const div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `<img src="${thumb}"><p>${item.snippet.title}</p>`;
-    div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue, thumb);
+    div.innerHTML = `
+      <img src="${item.snippet.thumbnails.medium.url}">
+      <p>${item.snippet.title}</p>
+    `;
+    div.onclick = () => playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, queue);
     results.appendChild(div);
   });
 }
@@ -156,4 +139,4 @@ async function searchYT() {
 function generateWrapped() {
   if (history.length < 5) { alert("Listen to more songs first!"); return; }
   location.href = "wrapped.html";
-}
+  }
