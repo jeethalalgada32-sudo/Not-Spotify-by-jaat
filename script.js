@@ -33,7 +33,6 @@ function playNext() {
   history.push({ title: next.title, artist: next.artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
   updateQueueUI();
-  if (typeof updateModal === 'function') updateModal(next.videoId, next.title, next.artist);
 }
 
 function playSong(videoId, title, artist, queue) {
@@ -47,7 +46,6 @@ function playSong(videoId, title, artist, queue) {
   document.getElementById("playPauseBtn").innerText = "⏸";
   history.push({ title, artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
-  if (typeof updateModal === 'function') updateModal(videoId, title, artist);
 }
 
 async function showSuggestions() {
@@ -106,4 +104,4 @@ async function searchYT() {
 function generateWrapped() {
   if (history.length < 5) { alert("Listen to more songs first!"); return; }
   location.href = "wrapped.html";
-}
+    }
