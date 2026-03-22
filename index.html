@@ -123,18 +123,65 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 }
 .ai-input button:disabled { background: #222; color: #555; cursor: not-allowed; }
 
+/* NOW PLAYING */
 .now-playing {
-  display: none; align-items: center; gap: 12px;
+  display: none; align-items: center; gap: 8px;
   padding: 10px 16px; background: #111;
   border-top: 1px solid #1e1e1e; flex-shrink: 0;
 }
 .now-playing.active { display: flex; }
-.np-icon { color: #00ff88; font-size: 20px; }
+.np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; }
 .np-info { flex: 1; min-width: 0; }
 .np-title { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .np-sub { font-size: 11px; color: #555; }
-.np-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; padding: 4px 8px; }
+
+.np-controls {
+  display: flex; align-items: center; gap: 2px;
+  flex-shrink: 0;
+}
+.np-controls button, .np-queue-btn, .np-close {
+  background: none; border: none;
+  color: #aaa; font-size: 18px;
+  cursor: pointer; padding: 4px 8px;
+  border-radius: 8px; transition: all 0.2s;
+}
+.np-controls button:hover, .np-queue-btn:hover { color: #00ff88; }
 .np-close:hover { color: #fff; }
+
+/* QUEUE PANEL */
+.queue-panel {
+  display: none;
+  position: fixed; bottom: 55px; right: 0;
+  width: 300px; max-height: 400px;
+  background: #111; border: 1px solid #1e1e1e;
+  border-radius: 16px 0 0 0;
+  z-index: 100; flex-direction: column;
+  overflow: hidden; box-shadow: -4px -4px 20px rgba(0,0,0,0.5);
+}
+.queue-panel.active { display: flex; }
+.queue-header {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 14px 16px;
+  background: #161616; border-bottom: 1px solid #1e1e1e;
+  font-size: 13px; font-weight: bold; color: #fff;
+  flex-shrink: 0;
+}
+.queue-header button {
+  background: none; border: none;
+  color: #666; font-size: 16px; cursor: pointer;
+}
+.queue-header button:hover { color: #fff; }
+.queue-list { overflow-y: auto; padding: 8px; }
+.queue-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; transition: all 0.2s;
+  font-size: 12px; color: #ccc;
+}
+.queue-item:hover { background: #1a1a1a; color: #fff; }
+.queue-item.active { color: #00ff88; background: #0a1a12; }
+.queue-item .qi-num { color: #444; min-width: 20px; font-size: 11px; }
+.queue-item .qi-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 768px) {
   body { height: 100dvh; }
@@ -151,9 +198,12 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   header input { font-size: 12px; padding: 7px 12px; }
   header .search-btn { font-size: 12px; padding: 7px 12px; }
   header .wrapped-btn { font-size: 11px; padding: 7px 10px; }
+  .queue-panel { width: 100%; border-radius: 16px 16px 0 0; }
+  .np-controls button, .np-queue-btn, .np-close { font-size: 16px; padding: 4px 6px; }
 }
 
-header, .main, .now-playing { position: relative; z-index: 1; }
+header, .main, .now-playing, .queue-panel { position: relative; z-index: 1; }
+.queue-panel { position: fixed; z-index: 100; }
 #player { display: none; }
 </style>
 </head>
@@ -216,13 +266,29 @@ if (isInstagram) {
   </div>
 </div>
 
+<!-- Now Playing Bar -->
 <div class="now-playing" id="nowPlaying">
   <span class="np-icon">♫</span>
   <div class="np-info">
     <div class="np-title" id="npTitle">—</div>
     <div class="np-sub">Now Playing</div>
   </div>
+  <div class="np-controls">
+    <button onclick="playPrev()" title="Previous">⏮</button>
+    <button id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">⏸</button>
+    <button onclick="playNext()" title="Next">⏭</button>
+  </div>
+  <button class="np-queue-btn" onclick="toggleQueue()" title="Up Next">☰</button>
   <button class="np-close" onclick="stopPlayer()">✕</button>
+</div>
+
+<!-- Queue Panel -->
+<div class="queue-panel" id="queuePanel">
+  <div class="queue-header">
+    <span>Up Next</span>
+    <button onclick="toggleQueue()">✕</button>
+  </div>
+  <div class="queue-list" id="queueList"></div>
 </div>
 
 <div id="player"></div>
@@ -309,9 +375,66 @@ async function playSongByName(name) {
   } catch(e) { console.error("Play error:", e); }
 }
 
+function togglePlayPause() {
+  if (!player) return;
+  const state = player.getPlayerState();
+  if (state === YT.PlayerState.PLAYING) {
+    player.pauseVideo();
+    document.getElementById("playPauseBtn").innerText = "▶";
+  } else {
+    player.playVideo();
+    document.getElementById("playPauseBtn").innerText = "⏸";
+  }
+}
+
+function toggleQueue() {
+  const panel = document.getElementById("queuePanel");
+  panel.classList.toggle("active");
+  if (panel.classList.contains("active")) updateQueueUI();
+}
+
+function updateQueueUI() {
+  const list = document.getElementById("queueList");
+  if (currentQueue.length === 0) {
+    list.innerHTML = `<p style="color:#444;font-size:12px;padding:12px">Queue empty — search songs!</p>`;
+    return;
+  }
+  list.innerHTML = currentQueue.map((item, i) => `
+    <div class="queue-item ${i === currentQueueIndex ? 'active' : ''}" onclick="jumpToQueue(${i})">
+      <span class="qi-num">${i === currentQueueIndex ? '▶' : i+1}</span>
+      <span class="qi-title">${item.title}</span>
+    </div>
+  `).join("");
+}
+
+function jumpToQueue(index) {
+  currentQueueIndex = index;
+  const item = currentQueue[index];
+  player.loadVideoById(item.videoId);
+  document.getElementById("npTitle").innerText = item.title;
+  document.getElementById("nowPlaying").classList.add("active");
+  document.getElementById("playPauseBtn").innerText = "⏸";
+  history.push({ title: item.title, artist: item.artist, time: Date.now() });
+  localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI();
+}
+
+function playPrev() {
+  if (currentQueue.length === 0) return;
+  currentQueueIndex = (currentQueueIndex - 1 + currentQueue.length) % currentQueue.length;
+  const item = currentQueue[currentQueueIndex];
+  player.loadVideoById(item.videoId);
+  document.getElementById("npTitle").innerText = item.title;
+  document.getElementById("playPauseBtn").innerText = "⏸";
+  history.push({ title: item.title, artist: item.artist, time: Date.now() });
+  localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI();
+}
+
 function stopPlayer() {
   if (player && player.stopVideo) player.stopVideo();
   document.getElementById("nowPlaying").classList.remove("active");
+  document.getElementById("queuePanel").classList.remove("active");
   currentQueue = [];
   currentQueueIndex = -1;
 }
@@ -424,4 +547,4 @@ animate();
 </script>
 
 </body>
-</html>
+  </html>
