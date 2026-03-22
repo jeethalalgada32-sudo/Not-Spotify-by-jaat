@@ -40,6 +40,7 @@ header .wrapped-btn {
 header .wrapped-btn:hover { color: #fff; border-color: #555; }
 
 .main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
 .search-panel { flex: 1; overflow-y: auto; padding: 16px; min-width: 0; }
 
 .grid {
@@ -63,6 +64,7 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   display: flex; flex-direction: column;
   background: #0d0d14; min-height: 0;
 }
+
 .ai-header {
   padding: 13px 16px; background: #111;
   border-bottom: 1px solid #1e1e1e;
@@ -78,6 +80,7 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   display: flex; flex-direction: column; gap: 10px;
   min-height: 0;
 }
+
 .ai-msg {
   padding: 10px 13px; border-radius: 14px;
   font-size: 13px; line-height: 1.6; max-width: 94%;
@@ -90,6 +93,7 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   background: #00ff88; color: #000;
   align-self: flex-end; border-bottom-right-radius: 4px;
 }
+
 .song-chip {
   display: flex; align-items: center; gap: 8px;
   background: #1a1a2e; border: 1px solid #2a2a4a;
@@ -119,171 +123,53 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 }
 .ai-input button:disabled { background: #222; color: #555; cursor: not-allowed; }
 
-/* NOW PLAYING BAR */
+/* NOW PLAYING */
 .now-playing {
   display: none; align-items: center; gap: 8px;
   padding: 10px 16px; background: #111;
   border-top: 1px solid #1e1e1e; flex-shrink: 0;
-  cursor: pointer; z-index: 10;
 }
 .now-playing.active { display: flex; }
 .np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; }
-.np-thumb {
-  width: 40px; height: 40px; border-radius: 6px;
-  object-fit: cover; flex-shrink: 0; display: none;
-}
-.np-thumb.show { display: block; }
 .np-info { flex: 1; min-width: 0; }
 .np-title { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .np-sub { font-size: 11px; color: #555; }
 
 .np-controls {
-  display: flex; align-items: center; gap: 2px; flex-shrink: 0;
-}
-.np-controls button, .np-queue-btn, .np-close, .np-expand {
-  background: none; border: none; color: #aaa; font-size: 18px;
-  cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s;
-}
-.np-controls button:hover, .np-queue-btn:hover, .np-expand:hover { color: #00ff88; }
-.np-close:hover { color: #fff; }
-
-/* VIDEO PLAYER MODAL */
-.video-modal {
-  display: none;
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: #000; z-index: 200;
-  flex-direction: column;
-}
-.video-modal.active { display: flex; }
-
-.video-modal-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: rgba(0,0,0,0.8);
+  display: flex; align-items: center; gap: 2px;
   flex-shrink: 0;
 }
-.video-modal-header button {
-  background: none; border: none; color: #fff;
-  font-size: 22px; cursor: pointer; padding: 4px;
+.np-controls button, .np-queue-btn, .np-close {
+  background: none; border: none;
+  color: #aaa; font-size: 18px;
+  cursor: pointer; padding: 4px 8px;
+  border-radius: 8px; transition: all 0.2s;
 }
+.np-controls button:hover, .np-queue-btn:hover { color: #00ff88; }
+.np-close:hover { color: #fff; }
 
-/* Song/Video Toggle */
-.mode-toggle {
-  display: flex; background: #222; border-radius: 25px;
-  padding: 3px; gap: 2px; margin: 0 auto;
-}
-.mode-toggle button {
-  padding: 6px 18px; border-radius: 22px; border: none;
-  background: none; color: #888; font-size: 13px;
-  cursor: pointer; font-weight: bold; transition: all 0.2s;
-}
-.mode-toggle button.active {
-  background: #fff; color: #000;
-}
-
-.video-modal-more {
-  background: none; border: none; color: #fff;
-  font-size: 22px; cursor: pointer; padding: 4px;
-  margin-left: auto;
-}
-
-/* Video area */
-.video-area {
-  flex: 1; display: flex; align-items: center;
-  justify-content: center; background: #000;
-  position: relative; overflow: hidden;
-}
-.video-area #videoPlayer {
-  width: 100%; height: 100%;
-}
-.video-area .song-thumb {
-  width: 200px; height: 200px; border-radius: 16px;
-  object-fit: cover; box-shadow: 0 8px 40px rgba(0,255,136,0.2);
-}
-
-/* Song info in modal */
-.video-modal-info {
-  padding: 20px 20px 10px;
-  background: #000; flex-shrink: 0;
-}
-.video-modal-info h2 {
-  font-size: 20px; font-weight: 800; color: #fff;
-  margin-bottom: 4px;
-}
-.video-modal-info p { font-size: 14px; color: #888; }
-
-/* Progress bar */
-.progress-wrap {
-  padding: 0 20px; background: #000; flex-shrink: 0;
-}
-.progress-bar {
-  width: 100%; height: 4px; background: #333;
-  border-radius: 2px; margin: 12px 0 6px;
-  cursor: pointer; position: relative;
-}
-.progress-fill {
-  height: 100%; background: #00ff88;
-  border-radius: 2px; width: 0%;
-  transition: width 0.5s linear;
-}
-.progress-times {
-  display: flex; justify-content: space-between;
-  font-size: 11px; color: #555;
-}
-
-/* Modal Controls */
-.video-modal-controls {
-  display: flex; align-items: center; justify-content: center;
-  gap: 24px; padding: 16px 20px;
-  background: #000; flex-shrink: 0;
-}
-.video-modal-controls button {
-  background: none; border: none; color: #fff;
-  cursor: pointer; transition: all 0.2s;
-}
-.video-modal-controls .ctrl-side { font-size: 26px; color: #aaa; }
-.video-modal-controls .ctrl-side:hover { color: #fff; }
-.video-modal-controls .ctrl-main {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: #fff; color: #000; font-size: 28px;
-  display: flex; align-items: center; justify-content: center;
-}
-.video-modal-controls .ctrl-main:hover { background: #00ff88; }
-
-/* Tabs */
-.video-modal-tabs {
-  display: flex; background: #000;
-  border-top: 1px solid #1a1a1a; flex-shrink: 0;
-}
-.video-modal-tabs button {
-  flex: 1; padding: 14px; background: none; border: none;
-  color: #555; font-size: 12px; font-weight: bold;
-  cursor: pointer; text-transform: uppercase;
-  letter-spacing: 1px; transition: all 0.2s;
-  border-bottom: 2px solid transparent;
-}
-.video-modal-tabs button.active {
-  color: #fff; border-bottom-color: #00ff88;
-}
-
-/* Queue Panel */
+/* QUEUE PANEL */
 .queue-panel {
+  display: none;
   position: fixed; bottom: 55px; right: 0;
   width: 300px; max-height: 400px;
   background: #111; border: 1px solid #1e1e1e;
-  border-radius: 16px 0 0 0; z-index: 100;
-  flex-direction: column; overflow: hidden;
-  box-shadow: -4px -4px 20px rgba(0,0,0,0.5);
-  display: none;
+  border-radius: 16px 0 0 0;
+  z-index: 100; flex-direction: column;
+  overflow: hidden; box-shadow: -4px -4px 20px rgba(0,0,0,0.5);
 }
 .queue-panel.active { display: flex; }
 .queue-header {
   display: flex; justify-content: space-between;
   align-items: center; padding: 14px 16px;
   background: #161616; border-bottom: 1px solid #1e1e1e;
-  font-size: 13px; font-weight: bold; color: #fff; flex-shrink: 0;
+  font-size: 13px; font-weight: bold; color: #fff;
+  flex-shrink: 0;
 }
-.queue-header button { background: none; border: none; color: #666; font-size: 16px; cursor: pointer; }
+.queue-header button {
+  background: none; border: none;
+  color: #666; font-size: 16px; cursor: pointer;
+}
 .queue-header button:hover { color: #fff; }
 .queue-list { overflow-y: auto; padding: 8px; }
 .queue-item {
@@ -302,8 +188,10 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   .main { flex-direction: column; }
   .search-panel { flex: 1; overflow-y: auto; order: 1; min-height: 0; }
   .ai-panel {
-    width: 100%; min-width: unset; height: 44vh; flex-shrink: 0;
-    border-left: none; border-top: 1px solid #1e1e1e; order: 2;
+    width: 100%; min-width: unset;
+    height: 44vh; flex-shrink: 0;
+    border-left: none; border-top: 1px solid #1e1e1e;
+    order: 2;
   }
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   header h1 { font-size: 14px; }
@@ -312,10 +200,9 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   header .wrapped-btn { font-size: 11px; padding: 7px 10px; }
   .queue-panel { width: 100%; border-radius: 16px 16px 0 0; }
   .np-controls button, .np-queue-btn, .np-close { font-size: 16px; padding: 4px 6px; }
-  .video-area .song-thumb { width: 160px; height: 160px; }
 }
 
-header, .main, .now-playing { position: relative; z-index: 1; }
+header, .main, .now-playing, .queue-panel { position: relative; z-index: 1; }
 .queue-panel { position: fixed; z-index: 100; }
 #player { display: none; }
 </style>
@@ -327,15 +214,28 @@ header, .main, .now-playing { position: relative; z-index: 1; }
 const isInstagram = navigator.userAgent.includes('Instagram');
 if (isInstagram) {
   document.body.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0a0f;color:#fff;text-align:center;padding:30px;gap:20px;">
+    <div style="
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; height:100vh; background:#0a0a0f;
+      color:#fff; text-align:center; padding:30px; gap:20px;
+    ">
       <div style="font-size:48px">⚡</div>
-      <h2 style="color:#00ff88;font-size:22px">StreamFlow</h2>
-      <p style="color:#666;font-size:14px;line-height:1.6">Instagram browser mein music play nahi hota.<br>Chrome ya Safari mein kholo!</p>
-      <a href="${window.location.href}" target="_blank" style="background:#00ff88;color:#000;padding:14px 28px;border-radius:25px;text-decoration:none;font-weight:bold;font-size:15px;">Open in Browser 🚀</a>
-    </div>`;
+      <h2 style="color:#00ff88; font-size:22px">StreamFlow</h2>
+      <p style="color:#666; font-size:14px; line-height:1.6">
+        Instagram browser mein music play nahi hota.<br>
+        Chrome ya Safari mein kholo!
+      </p>
+      <a href="${window.location.href}" target="_blank" style="
+        background:#00ff88; color:#000; padding:14px 28px;
+        border-radius:25px; text-decoration:none;
+        font-weight:bold; font-size:15px;
+      ">Open in Browser 🚀</a>
+    </div>
+  `;
 }
 </script>
 
+<!-- Canvas Background -->
 <canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
 <header>
@@ -349,6 +249,7 @@ if (isInstagram) {
   <div class="search-panel">
     <div class="grid" id="results"></div>
   </div>
+
   <div class="ai-panel">
     <div class="ai-header">
       <div class="dot"></div>
@@ -366,76 +267,19 @@ if (isInstagram) {
 </div>
 
 <!-- Now Playing Bar -->
-<div class="now-playing" id="nowPlaying" onclick="openVideoModal()">
-  <span class="np-icon" id="npIcon">♫</span>
-  <img class="np-thumb" id="npThumb" src="">
+<div class="now-playing" id="nowPlaying">
+  <span class="np-icon">♫</span>
   <div class="np-info">
     <div class="np-title" id="npTitle">—</div>
-    <div class="np-sub">Now Playing • tap to expand</div>
+    <div class="np-sub">Now Playing</div>
   </div>
-  <div class="np-controls" onclick="event.stopPropagation()">
+  <div class="np-controls">
     <button onclick="playPrev()" title="Previous">⏮</button>
     <button id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">⏸</button>
     <button onclick="playNext()" title="Next">⏭</button>
   </div>
-  <button class="np-queue-btn" onclick="event.stopPropagation(); toggleQueue()" title="Up Next">☰</button>
-  <button class="np-close" onclick="event.stopPropagation(); stopPlayer()">✕</button>
-</div>
-
-<!-- Video Modal -->
-<div class="video-modal" id="videoModal">
-  <div class="video-modal-header">
-    <button onclick="closeVideoModal()">⌄</button>
-    <div class="mode-toggle">
-      <button id="songModeBtn" class="active" onclick="setMode('song')">Song</button>
-      <button id="videoModeBtn" onclick="setMode('video')">Video</button>
-    </div>
-    <button class="video-modal-more">⋯</button>
-  </div>
-
-  <!-- Media Area -->
-  <div class="video-area" id="videoArea">
-    <img class="song-thumb" id="modalThumb" src="" style="display:block;">
-    <div id="videoPlayer" style="display:none;"></div>
-  </div>
-
-  <!-- Song Info -->
-  <div class="video-modal-info">
-    <h2 id="modalTitle">—</h2>
-    <p id="modalArtist">—</p>
-  </div>
-
-  <!-- Progress -->
-  <div class="progress-wrap">
-    <div class="progress-bar" onclick="seekTo(event)">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="progress-times">
-      <span id="currentTime">0:00</span>
-      <span id="totalTime">0:00</span>
-    </div>
-  </div>
-
-  <!-- Controls -->
-  <div class="video-modal-controls">
-    <button class="ctrl-side" onclick="playPrev()">⏮</button>
-    <button class="ctrl-main" id="modalPlayPauseBtn" onclick="togglePlayPause()">⏸</button>
-    <button class="ctrl-side" onclick="playNext()">⏭</button>
-  </div>
-
-  <!-- Tabs -->
-  <div class="video-modal-tabs">
-    <button class="active" onclick="switchTab(this, 'upnext')">Up Next</button>
-    <button onclick="switchTab(this, 'related')">Related</button>
-  </div>
-
-  <!-- Tab Content -->
-  <div id="tabUpnext" style="flex:1;overflow-y:auto;padding:8px;background:#000;">
-    <div id="modalQueueList"></div>
-  </div>
-  <div id="tabRelated" style="flex:1;overflow-y:auto;padding:8px;background:#000;display:none;">
-    <p style="color:#444;font-size:12px;padding:12px">Related songs coming soon!</p>
-  </div>
+  <button class="np-queue-btn" onclick="toggleQueue()" title="Up Next">☰</button>
+  <button class="np-close" onclick="stopPlayer()">✕</button>
 </div>
 
 <!-- Queue Panel -->
@@ -453,144 +297,253 @@ if (isInstagram) {
 
 <script>
 let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-let currentMode = 'song';
-let currentVideoId = '';
-let currentArtist = '';
-let currentThumb = '';
-let progressInterval = null;
-let videoPlayerReady = false;
-let videoPlayer = null;
 
-// Video Player Init
-function initVideoPlayer(videoId) {
-  if (videoPlayer) {
-    videoPlayer.loadVideoById(videoId);
-    return;
-  }
-  videoPlayer = new YT.Player('videoPlayer', {
-    height: '100%', width: '100%',
-    videoId: videoId,
-    playerVars: { autoplay: 1, controls: 0, rel: 0 },
-    events: {
-      onReady: () => { videoPlayerReady = true; },
-      onStateChange: (e) => {
-        if (e.data === YT.PlayerState.PLAYING) {
-          document.getElementById("modalPlayPauseBtn").innerText = "⏸";
-          startProgress();
-        } else if (e.data === YT.PlayerState.PAUSED) {
-          document.getElementById("modalPlayPauseBtn").innerText = "▶";
-        }
-      }
-    }
-  });
+function cleanText(text) {
+  return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/\[(\d+)\]/g, "").trim();
 }
 
-function setMode(mode) {
-  currentMode = mode;
-  document.getElementById('songModeBtn').classList.toggle('active', mode === 'song');
-  document.getElementById('videoModeBtn').classList.toggle('active', mode === 'video');
-
-  const thumb = document.getElementById('modalThumb');
-  const vp = document.getElementById('videoPlayer');
-
-  if (mode === 'video') {
-    thumb.style.display = 'none';
-    vp.style.display = 'block';
-    if (currentVideoId) initVideoPlayer(currentVideoId);
+function addAiMsg(text, type) {
+  const container = document.getElementById("aiMessages");
+  const div = document.createElement("div");
+  div.className = "ai-msg " + type;
+  if (type === "bot") {
+    const lines = text.split("\n");
+    let html = "";
+    lines.forEach(line => {
+      const trimmed = cleanText(line);
+      if (!trimmed) return;
+      if (line.trim().startsWith("🎵")) {
+        const songName = trimmed.replace("🎵", "").trim();
+        html += `<div class="song-chip" onclick="playSongByName('${songName.replace(/'/g, "\\'")}')">
+          <span class="pi">▶</span><span>${songName}</span>
+        </div>`;
+      } else {
+        html += `<p class="mood-text">${trimmed}</p>`;
+      }
+    });
+    div.innerHTML = html;
   } else {
-    thumb.style.display = 'block';
-    vp.style.display = 'none';
-    if (videoPlayer) videoPlayer.pauseVideo();
+    div.innerText = text;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMsg() {
+  const input = document.getElementById("aiInput");
+  const btn = document.getElementById("sendBtn");
+  const text = input.value.trim();
+  if (!text) return;
+  addAiMsg(text, "user");
+  input.value = "";
+  btn.disabled = true;
+  chatHistory.push({ role: "user", content: text });
+  const container = document.getElementById("aiMessages");
+  const typing = document.createElement("div");
+  typing.className = "ai-msg bot";
+  typing.style.color = "#444";
+  typing.innerText = "Finding your vibe...";
+  container.appendChild(typing);
+  container.scrollTop = container.scrollHeight;
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, history: chatHistory.slice(-8) })
+    });
+    const data = await res.json();
+    typing.remove();
+    addAiMsg(data.reply, "bot");
+    chatHistory.push({ role: "assistant", content: data.reply });
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistory.slice(-20)));
+  } catch (e) {
+    typing.remove();
+    addAiMsg("Something went wrong. Try again!", "bot");
+  }
+  btn.disabled = false;
+  input.focus();
+}
+
+async function playSongByName(name) {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(name)}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`);
+    const data = await res.json();
+    if (data.items && data.items.length > 0) {
+      const item = data.items[0];
+      playSong(item.id.videoId, item.snippet.title, item.snippet.channelTitle, null);
+    }
+  } catch(e) { console.error("Play error:", e); }
+}
+
+function togglePlayPause() {
+  if (!player) return;
+  const state = player.getPlayerState();
+  if (state === YT.PlayerState.PLAYING) {
+    player.pauseVideo();
+    document.getElementById("playPauseBtn").innerText = "▶";
+  } else {
+    player.playVideo();
+    document.getElementById("playPauseBtn").innerText = "⏸";
   }
 }
 
-function openVideoModal() {
-  document.getElementById('videoModal').classList.add('active');
-  updateModalQueueUI();
-  startProgress();
+function toggleQueue() {
+  const panel = document.getElementById("queuePanel");
+  panel.classList.toggle("active");
+  if (panel.classList.contains("active")) updateQueueUI();
 }
 
-function closeVideoModal() {
-  document.getElementById('videoModal').classList.remove('active');
-}
-
-function startProgress() {
-  clearInterval(progressInterval);
-  progressInterval = setInterval(() => {
-    if (!player) return;
-    try {
-      const current = player.getCurrentTime();
-      const total = player.getDuration();
-      if (total > 0) {
-        document.getElementById('progressFill').style.width = (current/total*100) + '%';
-        document.getElementById('currentTime').innerText = formatTime(current);
-        document.getElementById('totalTime').innerText = formatTime(total);
-      }
-    } catch(e) {}
-  }, 500);
-}
-
-function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2,'0')}`;
-}
-
-function seekTo(e) {
-  const bar = e.currentTarget;
-  const pct = e.offsetX / bar.offsetWidth;
-  if (player) player.seekTo(player.getDuration() * pct, true);
-}
-
-function switchTab(btn, tab) {
-  document.querySelectorAll('.video-modal-tabs button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tabUpnext').style.display = tab === 'upnext' ? 'block' : 'none';
-  document.getElementById('tabRelated').style.display = tab === 'related' ? 'block' : 'none';
-}
-
-function updateModalQueueUI() {
-  const list = document.getElementById('modalQueueList');
+function updateQueueUI() {
+  const list = document.getElementById("queueList");
   if (currentQueue.length === 0) {
-    list.innerHTML = `<p style="color:#444;font-size:12px;padding:12px">Queue empty!</p>`;
+    list.innerHTML = `<p style="color:#444;font-size:12px;padding:12px">Queue empty — search songs!</p>`;
     return;
   }
   list.innerHTML = currentQueue.map((item, i) => `
-    <div class="queue-item ${i === currentQueueIndex ? 'active' : ''}" onclick="jumpToQueue(${i}); updateModalQueueUI();">
+    <div class="queue-item ${i === currentQueueIndex ? 'active' : ''}" onclick="jumpToQueue(${i})">
       <span class="qi-num">${i === currentQueueIndex ? '▶' : i+1}</span>
       <span class="qi-title">${item.title}</span>
     </div>
   `).join("");
 }
 
-// Override playSong to update modal info
-const _origPlaySong = playSong;
-window.playSong = function(videoId, title, artist, queue, thumb) {
-  currentVideoId = videoId;
-  currentArtist = artist;
-  currentThumb = thumb || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+function jumpToQueue(index) {
+  currentQueueIndex = index;
+  const item = currentQueue[index];
+  player.loadVideoById(item.videoId);
+  document.getElementById("npTitle").innerText = item.title;
+  document.getElementById("nowPlaying").classList.add("active");
+  document.getElementById("playPauseBtn").innerText = "⏸";
+  history.push({ title: item.title, artist: item.artist, time: Date.now() });
+  localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI();
+}
 
-  _origPlaySong(videoId, title, artist, queue);
+function playPrev() {
+  if (currentQueue.length === 0) return;
+  currentQueueIndex = (currentQueueIndex - 1 + currentQueue.length) % currentQueue.length;
+  const item = currentQueue[currentQueueIndex];
+  player.loadVideoById(item.videoId);
+  document.getElementById("npTitle").innerText = item.title;
+  document.getElementById("playPauseBtn").innerText = "⏸";
+  history.push({ title: item.title, artist: item.artist, time: Date.now() });
+  localStorage.setItem("history", JSON.stringify(history));
+  updateQueueUI();
+}
 
-  // Update bar
-  document.getElementById('npTitle').innerText = title;
-  document.getElementById('npThumb').src = currentThumb;
-  document.getElementById('npThumb').classList.add('show');
-  document.getElementById('npIcon').style.display = 'none';
-  document.getElementById('playPauseBtn').innerText = '⏸';
+function stopPlayer() {
+  if (player && player.stopVideo) player.stopVideo();
+  document.getElementById("nowPlaying").classList.remove("active");
+  document.getElementById("queuePanel").classList.remove("active");
+  currentQueue = [];
+  currentQueueIndex = -1;
+}
+</script>
 
-  // Update modal
-  document.getElementById('modalTitle').innerText = title;
-  document.getElementById('modalArtist').innerText = artist;
-  document.getElementById('modalThumb').src = currentThumb;
-  document.getElementById('modalPlayPauseBtn').innerText = '⏸';
+<!-- Particle Animation -->
+<script>
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+let mouse = { x: W/2, y: H/2 };
+let time = 0;
 
-  if (currentMode === 'video' && document.getElementById('videoModal').classList.contains('active')) {
-    initVideoPlayer(videoId);
+window.addEventListener('resize', () => {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+});
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+
+const particles = [];
+const PARTICLE_COUNT = 80;
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.5 ? '0,255,136' : '0,204,255';
   }
+  update() {
+    const dx = mouse.x - this.x;
+    const dy = mouse.y - this.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 150) { this.x += dx * 0.01; this.y += dy * 0.01; }
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > W) this.speedX *= -1;
+    if (this.y < 0 || this.y > H) this.speedY *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${this.opacity})`;
+    ctx.fill();
+  }
+}
 
-  startProgress();
-};
+for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
 
-function cleanText(text) {
-  return text.replace(/\*\
+function connectParticles() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,255,136,${0.1 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawWaves() {
+  for (let w = 0; w < 3; w++) {
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.5);
+    for (let x = 0; x < W; x += 5) {
+      const y = H * 0.5 +
+        Math.sin(x * 0.008 + time + w * 2) * (30 + w * 15) +
+        Math.sin(x * 0.015 + time * 0.7) * 20 +
+        (mouse.y - H/2) * 0.05;
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = [`rgba(0,255,136,0.03)`, `rgba(0,204,255,0.025)`, `rgba(150,100,255,0.02)`][w];
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+function drawMouseGlow() {
+  const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
+  grad.addColorStop(0, 'rgba(0,255,136,0.06)');
+  grad.addColorStop(1, 'rgba(0,255,136,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  time += 0.008;
+  drawWaves();
+  drawMouseGlow();
+  particles.forEach(p => { p.update(); p.draw(); });
+  connectParticles();
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html> 
