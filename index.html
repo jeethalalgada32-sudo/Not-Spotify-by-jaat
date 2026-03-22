@@ -92,7 +92,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   background: #00ff88; color: #000;
   align-self: flex-end; border-bottom-right-radius: 4px;
 }
-
 .song-chip {
   display: flex; align-items: center; gap: 8px;
   background: #1a1a2e; border: 1px solid #2a2a4a;
@@ -121,7 +120,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 }
 .ai-input button:disabled { background: #222; color: #555; cursor: not-allowed; }
 
-/* NOW PLAYING */
 .now-playing {
   display: none; align-items: center; gap: 8px;
   padding: 10px 16px; background: #111;
@@ -129,8 +127,8 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   position: relative; z-index: 1;
 }
 .now-playing.active { display: flex; }
-.np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; cursor: pointer; }
-.np-info { flex: 1; min-width: 0; cursor: pointer; }
+.np-icon { color: #00ff88; font-size: 20px; flex-shrink: 0; }
+.np-info { flex: 1; min-width: 0; }
 .np-title { font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .np-sub { font-size: 11px; color: #555; }
 .np-controls {
@@ -143,7 +141,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 .np-controls button:hover, .np-queue-btn:hover { color: #00ff88; }
 .np-close:hover { color: #fff; }
 
-/* QUEUE PANEL */
 .queue-panel {
   display: none; position: fixed; bottom: 55px; right: 0;
   width: 300px; max-height: 400px; background: #111;
@@ -171,92 +168,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 .queue-item .qi-num { color: #444; min-width: 20px; font-size: 11px; }
 .queue-item .qi-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* VIDEO MODAL */
-.video-modal {
-  display: none; position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: #000; z-index: 200; flex-direction: column;
-}
-.video-modal.active { display: flex; }
-
-.vm-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: #000; flex-shrink: 0;
-}
-.vm-down {
-  background: none; border: none; color: #fff;
-  font-size: 26px; cursor: pointer;
-}
-.vm-toggle {
-  display: flex; background: #222; border-radius: 25px;
-  padding: 3px; margin: 0 auto;
-}
-.vm-toggle button {
-  padding: 6px 20px; border-radius: 22px; border: none;
-  background: none; color: #888; font-size: 13px;
-  cursor: pointer; font-weight: bold; transition: all 0.2s;
-}
-.vm-toggle button.active { background: #fff; color: #000; }
-
-.vm-media {
-  flex: 1; display: flex; align-items: center;
-  justify-content: center; background: #000; overflow: hidden;
-}
-.vm-media #vmPlayer { width: 100%; height: 100%; }
-.vm-thumb {
-  width: 220px; height: 220px; border-radius: 20px;
-  object-fit: cover; box-shadow: 0 8px 40px rgba(0,255,136,0.15);
-}
-
-.vm-info { padding: 20px 20px 8px; background: #000; flex-shrink: 0; }
-.vm-info h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-.vm-info p { font-size: 14px; color: #888; }
-
-.vm-progress { padding: 0 20px; background: #000; flex-shrink: 0; }
-.vm-bar {
-  width: 100%; height: 4px; background: #333;
-  border-radius: 2px; margin: 12px 0 6px; cursor: pointer;
-}
-.vm-fill { height: 100%; background: #00ff88; border-radius: 2px; width: 0%; }
-.vm-times { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
-
-.vm-controls {
-  display: flex; align-items: center; justify-content: center;
-  gap: 28px; padding: 16px 20px; background: #000; flex-shrink: 0;
-}
-.vm-controls button { background: none; border: none; cursor: pointer; transition: all 0.2s; }
-.vm-ctrl-side { font-size: 28px; color: #aaa; }
-.vm-ctrl-side:hover { color: #fff; }
-.vm-ctrl-main {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: #fff; color: #000; font-size: 28px;
-  display: flex; align-items: center; justify-content: center;
-}
-.vm-ctrl-main:hover { background: #00ff88; }
-
-.vm-tabs {
-  display: flex; background: #000;
-  border-top: 1px solid #1a1a1a; flex-shrink: 0;
-}
-.vm-tabs button {
-  flex: 1; padding: 14px; background: none; border: none;
-  color: #555; font-size: 12px; font-weight: bold;
-  cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-  border-bottom: 2px solid transparent; transition: all 0.2s;
-}
-.vm-tabs button.active { color: #fff; border-bottom-color: #00ff88; }
-
-.vm-tab-content { flex: 1; overflow-y: auto; background: #000; padding: 8px; }
-.vm-queue-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: 10px;
-  cursor: pointer; font-size: 12px; color: #ccc; transition: all 0.2s;
-}
-.vm-queue-item:hover { background: #1a1a1a; color: #fff; }
-.vm-queue-item.active { color: #00ff88; background: #0a1a12; }
-.vm-queue-item .vq-num { color: #444; min-width: 20px; font-size: 11px; }
-.vm-queue-item .vq-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
 @media (max-width: 768px) {
   body { height: 100dvh; }
   .main { flex-direction: column; }
@@ -272,7 +183,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
   header .wrapped-btn { font-size: 11px; padding: 7px 10px; }
   .queue-panel { width: 100%; border-radius: 16px 16px 0 0; }
   .np-controls button, .np-queue-btn, .np-close { font-size: 16px; padding: 4px 6px; }
-  .vm-thumb { width: 160px; height: 160px; }
 }
 
 #player { display: none; }
@@ -280,7 +190,6 @@ header .wrapped-btn:hover { color: #fff; border-color: #555; }
 </head>
 <body>
 
-<!-- Instagram browser detection -->
 <script>
 const isInstagram = navigator.userAgent.includes('Instagram');
 if (isInstagram) {
@@ -323,12 +232,11 @@ if (isInstagram) {
   </div>
 </div>
 
-<!-- Now Playing Bar -->
 <div class="now-playing" id="nowPlaying">
-  <span class="np-icon" onclick="openModal()">♫</span>
-  <div class="np-info" onclick="openModal()">
+  <span class="np-icon">♫</span>
+  <div class="np-info">
     <div class="np-title" id="npTitle">—</div>
-    <div class="np-sub">Now Playing • tap to expand</div>
+    <div class="np-sub">Now Playing</div>
   </div>
   <div class="np-controls">
     <button onclick="playPrev()">⏮</button>
@@ -339,49 +247,6 @@ if (isInstagram) {
   <button class="np-close" onclick="stopPlayer()">✕</button>
 </div>
 
-<!-- Video Modal -->
-<div class="video-modal" id="videoModal">
-  <div class="vm-header">
-    <button class="vm-down" onclick="closeModal()">⌄</button>
-    <div class="vm-toggle">
-      <button id="songBtn" class="active" onclick="setMode('song')">Song</button>
-      <button id="videoBtn" onclick="setMode('video')">Video</button>
-    </div>
-    <button style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">⋯</button>
-  </div>
-  <div class="vm-media">
-    <img class="vm-thumb" id="vmThumb" src="">
-    <div id="vmPlayer" style="display:none;"></div>
-  </div>
-  <div class="vm-info">
-    <h2 id="vmTitle">—</h2>
-    <p id="vmArtist">—</p>
-  </div>
-  <div class="vm-progress">
-    <div class="vm-bar" onclick="vmSeek(event)">
-      <div class="vm-fill" id="vmFill"></div>
-    </div>
-    <div class="vm-times">
-      <span id="vmCurrent">0:00</span>
-      <span id="vmTotal">0:00</span>
-    </div>
-  </div>
-  <div class="vm-controls">
-    <button class="vm-ctrl-side" onclick="playPrev()">⏮</button>
-    <button class="vm-ctrl-main" id="vmPPBtn" onclick="togglePlayPause()">⏸</button>
-    <button class="vm-ctrl-side" onclick="playNext()">⏭</button>
-  </div>
-  <div class="vm-tabs">
-    <button class="active" onclick="vmTab(this,'upnext')">Up Next</button>
-    <button onclick="vmTab(this,'related')">Related</button>
-  </div>
-  <div class="vm-tab-content" id="vmUpnext"></div>
-  <div class="vm-tab-content" id="vmRelated" style="display:none;">
-    <p style="color:#444;font-size:12px;padding:12px">Coming soon!</p>
-  </div>
-</div>
-
-<!-- Queue Panel -->
 <div class="queue-panel" id="queuePanel">
   <div class="queue-header">
     <span>Up Next</span>
@@ -396,10 +261,6 @@ if (isInstagram) {
 
 <script>
 let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-let vmMode = 'song';
-let vmPlayer = null;
-let vmCurrentVideoId = '';
-let progressTimer = null;
 
 function cleanText(text) {
   return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/\[(\d+)\]/g, "").trim();
@@ -474,11 +335,9 @@ function togglePlayPause() {
   if (state === YT.PlayerState.PLAYING) {
     player.pauseVideo();
     document.getElementById("playPauseBtn").innerText = "▶";
-    document.getElementById("vmPPBtn").innerText = "▶";
   } else {
     player.playVideo();
     document.getElementById("playPauseBtn").innerText = "⏸";
-    document.getElementById("vmPPBtn").innerText = "⏸";
   }
 }
 
@@ -511,7 +370,6 @@ function jumpToQueue(index) {
   history.push({ title: item.title, artist: item.artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
   updateQueueUI();
-  updateModal(item.videoId, item.title, item.artist);
 }
 
 function playPrev() {
@@ -524,18 +382,106 @@ function playPrev() {
   history.push({ title: item.title, artist: item.artist, time: Date.now() });
   localStorage.setItem("history", JSON.stringify(history));
   updateQueueUI();
-  updateModal(item.videoId, item.title, item.artist);
 }
 
 function stopPlayer() {
   if (player && player.stopVideo) player.stopVideo();
   document.getElementById("nowPlaying").classList.remove("active");
   document.getElementById("queuePanel").classList.remove("active");
-  document.getElementById("videoModal").classList.remove("active");
-  clearInterval(progressTimer);
   currentQueue = []; currentQueueIndex = -1;
 }
+</script>
 
-// VIDEO MODAL
-function openModal() {
-  document.getElementById('videoModal').classList.add('active')
+<script>
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+let mouse = { x: W/2, y: H/2 };
+let time = 0;
+
+window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+
+const particles = [];
+const PARTICLE_COUNT = 80;
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W; this.y = Math.random() * H;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.5 ? '0,255,136' : '0,204,255';
+  }
+  update() {
+    const dx = mouse.x - this.x; const dy = mouse.y - this.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 150) { this.x += dx * 0.01; this.y += dy * 0.01; }
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x < 0 || this.x > W) this.speedX *= -1;
+    if (this.y < 0 || this.y > H) this.speedY *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+function connectParticles() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,255,136,${0.1 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawWaves() {
+  for (let w = 0; w < 3; w++) {
+    ctx.beginPath(); ctx.moveTo(0, H * 0.5);
+    for (let x = 0; x < W; x += 5) {
+      const y = H * 0.5 +
+        Math.sin(x * 0.008 + time + w * 2) * (30 + w * 15) +
+        Math.sin(x * 0.015 + time * 0.7) * 20 +
+        (mouse.y - H/2) * 0.05;
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = [`rgba(0,255,136,0.03)`,`rgba(0,204,255,0.025)`,`rgba(150,100,255,0.02)`][w];
+    ctx.lineWidth = 1.5; ctx.stroke();
+  }
+}
+
+function drawMouseGlow() {
+  const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
+  grad.addColorStop(0, 'rgba(0,255,136,0.06)');
+  grad.addColorStop(1, 'rgba(0,255,136,0)');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H); time += 0.008;
+  drawWaves(); drawMouseGlow();
+  particles.forEach(p => { p.update(); p.draw(); });
+  connectParticles(); requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+  </html>
